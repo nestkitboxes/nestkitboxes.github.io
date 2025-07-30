@@ -43,7 +43,7 @@ body {
 
 .logo img {
     height: 40px;
-    width: auto;
+    width: 40px;
     max-width: 200px;
     object-fit: contain;
 }
