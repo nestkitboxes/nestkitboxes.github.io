@@ -3,101 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NestKit - Website Structure</title>
+    <title>NestKit - Where Every Move-In Becomes Your Customer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Header Navigation -->
+    <!-- Header -->
     <header class="header">
         <div class="container">
             <nav class="nav-container">
                 <div class="logo">
-                    <img src="images/logo.png" alt="NestKit Logo" class="logo-img">
+                    <div class="logo-icon">📦</div>
+                    <span>NestKit</span>
                 </div>
-                
                 <ul class="nav-menu">
-                    <li class="nav-item"><a href="#">For Advertisers</a></li>
-                    <li class="nav-item"><a href="#">For Apartments</a></li>
-                    <li class="nav-item"><a href="#">About Us</a></li>
+                    <li class="nav-item"><a href="#advertisers">For Advertisers</a></li>
+                    <li class="nav-item"><a href="#apartments">For Apartments</a></li>
+                    <li class="nav-item"><a href="#about">About Us</a></li>
                 </ul>
-                
-                <a href="#" class="cta-button">Contact Us</a>
+                <a href="#contact" class="cta-button">Get Started</a>
             </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero" style="background-image: url('images/hero-background.jpg');">
-        <div class="hero-overlay">
-            <div class="container">
-                <div class="hero-content">
-                    <h1>Where Every Move-In Becomes Your Customer</h1>
-                    <p>Properties earn passive revenue while advertisers reach high-intent renters with 40x better results than traditional marketing—all through premium welcome packages delivered at move-in</p>
-                    <a href="#" class="hero-button">Get Started →</a>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-tagline">Where Every Move-In Becomes Your Customer</div>
+                <h1>Premium <span style="color: white;">Welcome Packages</span><br>That Actually Work</h1>
+                <p>Reach high-income renters with verified intent, right as they move in. NestKit delivers your offer through trusted, property-endorsed welcome kits with a 90%+ consideration rate.</p>
+                <div class="hero-buttons">
+                    <a href="#advertisers" class="hero-button primary">For Advertisers →</a>
+                    <a href="#apartments" class="hero-button secondary">For Apartments →</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">99%</div>
+                        <div class="stat-label">Delivery Rate</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">81%</div>
+                        <div class="stat-label">Response Rate</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">90%</div>
+                        <div class="stat-label">Consideration Rate</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features">
+    <!-- Problem -->
+    <section class="problem-section">
         <div class="container">
-            <div class="features-header">
-                <h2>All the Features You Need in <span class="highlight">One Place</span></h2>
-                <p>At Campaign, we pride ourselves on offering tailored marketing solutions designed to propel your business towards success.</p>
+            <div class="section-header">
+                <h2>The Problem with <span class="highlight-red">Traditional Marketing</span></h2>
+                <p>Local businesses try to reach new renters through bulk mail, but 98% of it ends up in the trash.</p>
+            </div>
+            <div class="comparison-grid">
+                <div class="comparison-card traditional">
+                    <h3>Traditional Mass Mail</h3>
+                    <div class="stat-row">
+                        <span>Delivery Rate</span>
+                        <span class="stat-bad">98%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Response Rate</span>
+                        <span class="stat-bad">1%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Property Endorsed</span>
+                        <span class="stat-bad">No</span>
+                    </div>
+                    <p style="margin-top: 1rem;">❌ Right Message, Wrong Time<br>❌ No Built-in Credibility<br>❌ Lacks Context</p>
+                </div>
+                
+                <div class="vs-divider">VS</div>
+                
+                <div class="comparison-card nestkit">
+                    <h3>🏆 NestKit</h3>
+                    <div class="stat-row">
+                        <span>Delivery Rate</span>
+                        <span class="stat-good">99%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Response Rate</span>
+                        <span class="stat-good">81%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Property Endorsed</span>
+                        <span class="stat-good">Yes</span>
+                    </div>
+                    <p style="margin-top: 1rem;">✅ Right Message, Right Time<br>✅ Property Endorsement<br>✅ Perfect Timing</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advertisers -->
+    <section id="advertisers" class="advertisers-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+        <div class="container">
+            <div class="section-header">
+                <h2>For <span class="highlight">Advertisers</span></h2>
+                <p>Be the first brand new renters trust</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 1]</div>
+                    <h3>Guaranteed Delivery</h3>
+                    <p>99% delivery to verified new residents through property-endorsed welcome packages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 2]</div>
+                    <h3>Perfect Timing</h3>
+                    <p>Connect with residents during their 30-day peak spending window.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 3]</div>
+                    <h3>Property Endorsement</h3>
+                    <p>Property endorsement helps drive a 90% consideration rate.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 4]</div>
+                    <h3>Retarget Ready</h3>
+                    <p>Includes smart QR codes so you can capture leads and follow up digitally.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 5]</div>
+                    <h3>Email Capture</h3>
+                    <p>When renters engage with your offer, they enter their email for future promotions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 6]</div>
+                    <h3>Measurable Results</h3>
+                    <p>Know exactly how many renters interacted with your offer and what happened next.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 4rem;">
+                <h3 style="font-size: 2rem; margin-bottom: 2rem; color: #2c3e50;">Ready to Get Started?</h3>
+                <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;">Contact us today to discuss custom packages tailored to your marketing goals and budget.</p>
+                <a href="#contact" class="cta-button" style="display: inline-block; font-size: 1.1rem; padding: 1rem 2rem;">Get Custom Pricing →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apartments -->
+    <section id="apartments" class="apartments-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>For <span class="highlight">Apartments</span></h2>
+                <p>Welcome new residents with confidence</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 7]</div>
+                    <h3>Elevated Move-In Experience</h3>
+                    <p>Provide a premium, ready-to-go welcome kit that makes residents feel supported from day one.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 8]</div>
+                    <h3>Social Media Buzz</h3>
+                    <p>Kits include a "Welcome to Your New Home" experience that encourages residents to share their move-in moment on socials.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">[Image 9]</div>
+                    <h3>Earn Passive Revenue</h3>
+                    <p>Once we onboard 3+ properties, you share in the revenue from every kit delivered at your site.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Data -->
+    <section style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="container">
+            <div class="section-header">
+                <h2 style="color: white;">Proven <span style="color: #f8f9fa;">Market Opportunity</span></h2>
+                <p style="color: rgba(255, 255, 255, 0.9);">Orlando Class A apartment residents represent a $4,400 first-month spending opportunity</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+                <div style="text-align: center; background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 15px;">
+                    <div style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">85,000</div>
+                    <div>Class A Units in Orlando</div>
+                </div>
+                <div style="text-align: center; background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 15px;">
+                    <div style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">38,250</div>
+                    <div>Annual Move-ins</div>
+                </div>
+                <div style="text-align: center; background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 15px;">
+                    <div style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">$75k+</div>
+                    <div>Average Income</div>
+                </div>
+                <div style="text-align: center; background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 15px;">
+                    <div style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">$4,400</div>
+                    <div>First 30-Day Spending</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: #2c3e50;">Ready to Transform Your Customer Acquisition?</h2>
+            <p style="font-size: 1.2rem; color: #666; margin-bottom: 3rem;">Join leading businesses already using NestKit to reach high-intent renters at the perfect moment.</p>
+            
+            <div class="contact-options">
+                <div class="contact-method">
+                    <div style="font-size: 2rem;">📧</div>
+                    <div>
+                        <div style="font-size: 0.9rem; color: #666;">Email</div>
+                        <div style="font-weight: 600; color: #2c3e50;">nestkitboxes@gmail.com</div>
+                    </div>
+                </div>
+                <div class="contact-method">
+                    <div style="font-size: 2rem;">📞</div>
+                    <div>
+                        <div style="font-size: 0.9rem; color: #666;">Phone</div>
+                        <div style="font-weight: 600; color: #2c3e50;">925-984-4289</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="features-grid">
-                <!-- Feature Card 1 -->
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="images/hero.jpg" alt="Feature 1" class="feature-img">
-                    </div>
-                    <div class="feature-content">
-                        <h3>Complete Customer Service Package</h3>
-                        <p>Comprehensive support and service solutions tailored to your business needs.</p>
-                        <a href="#" class="feature-button">Contact Us →</a>
-                    </div>
+            <form class="contact-form">
+                <div class="form-row">
+                    <input type="text" placeholder="Your Name" required>
+                    <input type="email" placeholder="Your Email" required>
                 </div>
-                
-                <!-- Feature Card 2 -->
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="images/feature-2.jpg" alt="Feature 2" class="feature-img">
-                    </div>
-                    <div class="feature-content">
-                        <h3>Creation of Social Media Content</h3>
-                        <p>Engaging social media content that resonates with your target audience.</p>
-                        <a href="#" class="feature-button">Our Solutions →</a>
-                    </div>
+                <div class="form-row">
+                    <input type="text" placeholder="Company Name" required>
+                    <select required>
+                        <option value="">I'm interested in...</option>
+                        <option value="advertiser">Advertising with NestKit</option>
+                        <option value="property">Partnering as a Property</option>
+                        <option value="both">Both Opportunities</option>
+                    </select>
                 </div>
-                
-                <!-- Feature Card 3 -->
-                <div class="feature-card">
-                    <div class="feature-image">
-                        <img src="images/feature-3.jpg" alt="Feature 3" class="feature-img">
-                    </div>
-                    <div class="feature-content">
-                        <h3>Digital Marketing Advertising on All Media Platforms</h3>
-                        <p>Comprehensive digital advertising strategies across all major platforms.</p>
-                        <a href="#" class="feature-button">View More →</a>
-                    </div>
-                </div>
-            </div>
+                <textarea placeholder="Tell us about your needs..." rows="4" style="width: 100%; margin-bottom: 1.5rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 10px;"></textarea>
+                <button type="submit" class="submit-button">Get Started →</button>
+            </form>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
+    <!-- Footer -->
+    <footer class="footer">
         <div class="container">
-            <div class="cta-content">
-                <h2>Ready to Unleash Your Potential?</h2>
-                <form class="email-form">
-                    <input type="email" class="email-input" placeholder="Enter Your Email" required>
-                    <button type="submit" class="email-submit">Submit</button>
-                </form>
+            <div class="footer-content">
+                <div>
+                    <div class="logo">
+                        <div class="logo-icon">📦</div>
+                        <span>NestKit</span>
+                    </div>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-top: 1rem;">Where Every Move-In Becomes Your Customer</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>For Advertisers</h4>
+                        <a href="#advertisers">Pricing</a>
+                        <a href="#contact">Get Started</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>For Apartments</h4>
+                        <a href="#apartments">Partner Benefits</a>
+                        <a href="#contact">Join Network</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <a href="#contact">Contact</a>
+                        <a href="#">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6);">
+                <p>&copy; 2025 NestKit. All rights reserved.</p>
             </div>
         </div>
-    </section>
+    </footer>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Form submission
+        document.querySelector('.contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your interest! We\'ll be in touch soon.');
+        });
+    </script>
 </body>
 </html>
