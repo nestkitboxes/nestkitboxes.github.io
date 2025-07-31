@@ -906,3 +906,22 @@
                 text-align: center;
             }
         }
+.target-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center; /* Ensures both columns center vertically */
+}
+
+.target-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Takes full height of the grid cell */
+}
+
+.target-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers the content vertically */
+}
