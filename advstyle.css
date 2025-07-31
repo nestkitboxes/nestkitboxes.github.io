@@ -331,32 +331,37 @@ section {
     transform: translateY(-10px);
 }
 
-.step-visual {
-    position: relative;
-    margin-bottom: 1.5rem;
-}
-
-.step-visual img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 15px;
-}
-
 .step-number {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -15px;
+    right: -15px;
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    background: white;
+    color: #667eea;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.step-header {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+}
+
+.step-header-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: white;
 }
 
 .step-content h3 {
