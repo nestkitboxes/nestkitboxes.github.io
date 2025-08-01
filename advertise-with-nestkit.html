@@ -5,6 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advertise with NestKit - Reach New Renters at the Perfect Moment</title>
     <link rel="stylesheet" href="advstyle.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .calculator-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            padding: 1rem;
+        }
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .metric-card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .gradient-roi {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .package-btn {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 2px solid #d1d5db;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .package-btn.active {
+            border-color: #6366f1;
+            background-color: #eef2ff;
+            color: #6366f1;
+        }
+        .package-btn:hover {
+            border-color: #9ca3af;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -328,21 +370,8 @@
             <div class="section-header">
                 <h2>Calculate Your <span style="color: #f8f9fa;">Potential ROI</span></h2>
                 <p>See how many new customers you could reach and estimate your return on investment.</p>
-            </div>
-            <div class="calculator-container">
-                <div class="pricing-tease">
-                    <h3>Affordable Local Advertising</h3>
-                    <div class="price-highlight">Starting at $5.00</div>
-                    <p>per kit delivered • Custom packages available</p>
-                </div>
-                
-                <div class="calculator-buttons">
-                    <button class="calc-button" onclick="showCalculator()">📊 Use ROI Calculator</button>
-                    <a href="#contact" class="calc-button secondary">💬 Get Custom Quote</a>
-                </div>
-                
-                <div id="calculator-embed" class="calculator-embed">
-                    <div class="calculator-container">
+                <br>
+                <div class="calculator-container">
         <div class="max-w-6xl mx-auto">
             <!-- Header -->
             <div class="text-center mb-8">
@@ -591,15 +620,7 @@
                 </div>
             </div>
         </div>
-    </div>
-                    <div id="nestkit-calculator-root"></div>
-                    <div style="text-align: center; margin-top: 2rem;">
-                        <button class="calc-button" onclick="hideCalculator()">Close Calculator</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </div>  
 
     <!-- Contact CTA -->
     <section id="contact" class="contact-cta">
