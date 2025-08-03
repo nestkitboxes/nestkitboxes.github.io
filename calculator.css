@@ -38,3 +38,42 @@
         .package-btn:hover {
             border-color: #9ca3af;
         }
+        .calculator-container {
+            min-height: 100vh;
+            background: white;
+            padding: 1rem;
+        }
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .metric-card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .gradient-roi {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .package-btn {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 2px solid #d1d5db;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .package-btn.active {
+            border-color: #6366f1;
+            background-color: #eef2ff;
+            color: #6366f1;
+        }
+        .package-btn:hover {
+            border-color: #9ca3af;
+        }
