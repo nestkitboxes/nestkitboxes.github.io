@@ -485,3 +485,86 @@
         justify-content: center;
     }
 }
+.legal-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 120px;
+            margin-bottom: 4rem;
+        }
+        
+        .legal-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .legal-title {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .legal-meta {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .legal-content h2 {
+            color: #2c3e50;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.8rem;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+        
+        .legal-content h3 {
+            color: #495057;
+            margin: 1.5rem 0 0.8rem 0;
+            font-size: 1.3rem;
+        }
+        
+        .legal-content h4 {
+            color: #495057;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .legal-content p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+            color: #495057;
+        }
+        
+        .legal-content ul {
+            margin: 1rem 0 1rem 2rem;
+        }
+        
+        .legal-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .back-button {
+            margin-bottom: 2rem;
+        }
+        
+        .data-highlight {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .rights-highlight {
+            background: #e8f5e8;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #27ae60;
+        }
