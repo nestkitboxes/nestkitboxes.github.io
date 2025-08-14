@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Package Not Delivered | NestKit</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .error-content {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .error-number {
+            font-size: 8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: bounce 2s infinite;
+        }
+        
+        .error-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .error-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .error-message {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+        
+        .package-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: shake 3s infinite;
+        }
+        
+        .home-button {
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+        }
+        
+        .home-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.4);
+        }
+        
+        .fun-facts {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-left: 4px solid white;
+        }
+        
+        .fun-facts h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .fun-facts p {
+            margin-bottom: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            10% { transform: rotate(-3deg); }
+            20% { transform: rotate(3deg); }
+            30% { transform: rotate(-3deg); }
+            40% { transform: rotate(3deg); }
+            50% { transform: rotate(-3deg); }
+            60% { transform: rotate(3deg); }
+            70% { transform: rotate(-3deg); }
+            80% { transform: rotate(3deg); }
+            90% { transform: rotate(-3deg); }
+        }
+        
+        .search-container {
+            margin-top: 2rem;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        
+        .search-button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .quick-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .quick-link {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .quick-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .error-number {
+                font-size: 5rem;
+            }
+            
+            .error-title {
+                font-size: 2rem;
+            }
+            
+            .error-content {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .quick-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .quick-link {
+                width: 80%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-content">
+            <div class="package-icon">📦</div>
+            <div class="error-number">404</div>
+            <h1 class="error-title">Package Not Delivered!</h1>
+            <p class="error-subtitle">Oops! This page seems to have gotten lost in transit</p>
+            
+            <div class="error-message">
+                <p>🚚 Our delivery driver took a wrong turn somewhere...</p>
+                <p>Don't worry though! Unlike bulk mail, we'll help you find what you're looking for with a 99% success rate!</p>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search for what you need..." id="searchInput">
+                <button class="search-button" onclick="performSearch()">🔍</button>
+            </div>
+            
+            <div class="quick-links">
+                <a href="index.html" class="quick-link">🏠 Home</a>
+                <a href="advertise-with-nestkit.html" class="quick-link">📢 For Advertisers</a>
+                <a href="communities.html" class="quick-link">🏢 For Apartments</a>
+                <a href="contact.html" class="quick-link">📞 Contact</a>
+            </div>
+            
+            <a href="index.html" class="home-button">Return to NestKit HQ →</a>
+            
+            <div class="fun-facts">
+                <h3>🎯 Fun Fact While You're Here:</h3>
+                <p>• Traditional mail has a 98% discard rate, but you actually clicked on a broken link!</p>
+                <p>• Our welcome packages have a 99% delivery rate, unlike this page 😅</p>
+                <p>• At least you're not a piece of bulk mail heading straight to the trash!</p>
+                <p>• Fun fact: 404 errors are named after room 404 at CERN where the web was invented!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            if (!searchTerm) {
+                alert("📦 Please enter something to search for!");
+                return;
+            }
+            
+            // Simple keyword routing
+            const routes = {
+                'advertiser': 'advertise-with-nestkit.html',
+                'advertising': 'advertise-with-nestkit.html',
+                'business': 'advertise-with-nestkit.html',
+                'apartment': 'communities.html',
+                'property': 'communities.html',
+                'contact': 'contact.html',
+                'about': 'aboutus.html',
+                'home': 'index.html',
+                'pricing': 'calculator.html',
+                'calculator': 'calculator.html',
+                'revenue': 'calculator.html',
+                'terms': 'terms.html',
+                'privacy': 'privacy-policy.html',
+                'policy': 'privacy-policy.html'
+            };
+            
+            for (const [keyword, url] of Object.entries(routes)) {
+                if (searchTerm.includes(keyword)) {
+                    window.location.href = url;
+                    return;
+                }
+            }
+            
+            // If no match found, show a fun message and redirect to home
+            alert("🚚 Hmm, we couldn't find that in our delivery route! Let's head back to home base.");
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+        
+        // Allow Enter key to search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Add some fun easter eggs
+        document.addEventListener('keydown', function(e) {
+            // Konami code easter egg
+            if (e.code === 'ArrowUp') {
+                const packageIcon = document.querySelector('.package-icon');
+                packageIcon.style.animation = 'bounce 0.5s';
+                setTimeout(() => {
+                    packageIcon.style.animation = 'shake 3s infinite';
+                }, 500);
+            }
+        });
+        
+        // Random fun messages that change every 5 seconds
+        const funMessages = [
+            "🚚 Our delivery driver took a wrong turn somewhere...",
+            "📦 This page is still in the packaging facility...",
+            "🏠 Looks like this page didn't get the welcome package...",
+            "📍 GPS says we're lost, but at least we're not bulk mail!",
+            "🎯 This page has a 0% delivery rate (unlike our 99%!)",
+            "📮 Even our welcome packages are more reliable than this link!"
+        ];
+        
+        let messageIndex = 0;
+        setInterval(() => {
+            const messageElement = document.querySelector('.error-message p:first-child');
+            messageIndex = (messageIndex + 1) % funMessages.length;
+            messageElement.textContent = funMessages[messageIndex];
+        }, 5000);
+    </script>
+</body>
+</html>
