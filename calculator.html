@@ -6,6 +6,47 @@
     <title>NestKit - Where Every Move-In Becomes Your Customer</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .calculator-container {
+            min-height: 100vh;
+            background: white;
+            padding: 1rem;
+        }
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .metric-card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .gradient-roi {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .package-btn {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 2px solid #d1d5db;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .package-btn.active {
+            border-color: #6366f1;
+            background-color: #eef2ff;
+            color: #6366f1;
+        }
+        .package-btn:hover {
+            border-color: #9ca3af;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -28,10 +69,11 @@
     </header>
 
     <!-- Problem -->
-    <section class="problem-section">
+    <section style="padding-top: 140px; padding-bottom: 4rem; background: #f8f9fa;">
       <div id="nestkit-calculator">
-        <div class="calculator-container">
+        <div class="calculator-container" style="padding-top: 2rem;">
           <div class="max-w-6xl mx-auto">
+              <!-- Header -->
               <div class="text-center mb-8">
                   <div class="flex items-center justify-center gap-3 mb-4">
                       <div class="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center">
@@ -280,49 +322,6 @@
           </div>
       </div>
     </div>
-    </section>
-
-    <!-- Contact -->
-    <section id="contact" class="contact-section">
-        <div class="container">
-            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: #2c3e50;">Ready to Transform Your Customer Acquisition?</h2>
-            <p style="font-size: 1.2rem; color: #666; margin-bottom: 3rem;">Join leading businesses already using NestKit to reach high-intent renters at the perfect moment.</p>
-            
-            <div class="contact-options">
-                <div class="contact-method">
-                    <div style="font-size: 2rem;">📧</div>
-                    <div>
-                        <div style="font-size: 0.9rem; color: #666;">Email</div>
-                        <div style="font-weight: 600; color: #2c3e50;">nestkitboxes@gmail.com</div>
-                    </div>
-                </div>
-                <div class="contact-method">
-                    <div style="font-size: 2rem;">📞</div>
-                    <div>
-                        <div style="font-size: 0.9rem; color: #666;">Phone</div>
-                        <div style="font-weight: 600; color: #2c3e50;">925-984-4289</div>
-                    </div>
-                </div>
-            </div>
-            
-            <form class="contact-form">
-                <div class="form-row">
-                    <input type="text" placeholder="Your Name" required>
-                    <input type="email" placeholder="Your Email" required>
-                </div>
-                <div class="form-row">
-                    <input type="text" placeholder="Company Name" required>
-                    <select required>
-                        <option value="">I'm interested in...</option>
-                        <option value="advertiser">Advertising with NestKit</option>
-                        <option value="property">Partnering as a Property</option>
-                        <option value="both">Both Opportunities</option>
-                    </select>
-                </div>
-                <textarea placeholder="Tell us about your needs..." rows="4" style="width: 100%; margin-bottom: 1.5rem; padding: 1rem; border: 2px solid #e9ecef; border-radius: 10px;"></textarea>
-                <button type="submit" class="submit-button">Get Started →</button>
-            </form>
-        </div>
     </section>
 
     <!-- Footer -->
