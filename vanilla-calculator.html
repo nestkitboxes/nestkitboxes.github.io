@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestKit ROI Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="min-h-screen bg-white p-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-3xl font-bold text-gray-900">NestKit ROI Calculator</h1>
+                </div>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Calculate your customer lifetime value and return on investment with NestKit's premium welcome packages
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Input Section -->
+                <div class="space-y-6">
+                    <!-- Business Configuration -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                            Business Configuration
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Select Your Business Type
+                                </label>
+                                <select id="businessSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <optgroup label="Beauty">
+                                        <option value="150,4,2.5">Hair Salon</option>
+                                        <option value="60,6,2">Nail Salon</option>
+                                        <option value="35,8,3">Barbershop</option>
+                                        <option value="200,3,3">Spa Services</option>
+                                        <option value="120,4,2.5">Massage Therapy</option>
+                                        <option value="180,8,2">Lash Extensions</option>
+                                        <option value="30,12,2.5">Eyebrow Threading</option>
+                                        <option value="40,15,1.5">Tanning Salon</option>
+                                    </optgroup>
+                                    <optgroup label="Fitness">
+                                        <option value="25,24,1.5">Yoga Studio</option>
+                                        <option value="50,12,1.5">Gym Membership</option>
+                                        <option value="80,12,2">Personal Training</option>
+                                        <option value="35,18,2">Pilates Studio</option>
+                                        <option value="120,12,2.5">Martial Arts</option>
+                                        <option value="160,12,1.5">CrossFit Box</option>
+                                        <option value="130,12,2">Boxing Gym</option>
+                                    </optgroup>
+                                    <optgroup label="Dining">
+                                        <option value="45,12,3">Restaurant (Casual)</option>
+                                        <option value="8,48,2">Coffee Shop</option>
+                                        <option value="25,18,2.5">Pizza Delivery</option>
+                                        <option value="120,4,4">Fine Dining</option>
+                                        <option value="15,24,2">Bakery</option>
+                                        <option value="12,36,1.5">Juice Bar</option>
+                                        <option value="18,20,2">Ice Cream Shop</option>
+                                        <option value="400,2,3">Catering Service</option>
+                                    </optgroup>
+                                    <optgroup label="Home Services">
+                                        <option value="300,1.5,5">HVAC Services</option>
+                                        <option value="250,2,4">Plumbing</option>
+                                        <option value="120,12,2.5">House Cleaning</option>
+                                        <option value="200,6,3">Landscaping</option>
+                                        <option value="150,4,3">Pest Control</option>
+                                        <option value="100,12,3">Pool Cleaning</option>
+                                        <option value="80,6,2.5">Window Cleaning</option>
+                                        <option value="180,2,4">Carpet Cleaning</option>
+                                        <option value="200,3,4">Handyman Service</option>
+                                    </optgroup>
+                                    <optgroup label="Automotive">
+                                        <option value="400,2,4">Auto Repair</option>
+                                        <option value="50,4,3">Oil Change</option>
+                                        <option value="25,12,2">Car Wash</option>
+                                        <option value="150,4,3">Auto Detailing</option>
+                                        <option value="600,0.8,5">Tire Shop</option>
+                                    </optgroup>
+                                    <optgroup label="Pet Services">
+                                        <option value="70,6,3">Pet Grooming</option>
+                                        <option value="200,2,5">Veterinary</option>
+                                        <option value="150,4,3">Pet Boarding</option>
+                                        <option value="120,8,1.5">Dog Training</option>
+                                        <option value="45,12,3">Pet Store</option>
+                                    </optgroup>
+                                    <optgroup label="Healthcare">
+                                        <option value="300,2,5">Dentist</option>
+                                        <option value="80,8,2">Chiropractor</option>
+                                        <option value="250,1,3">Optometry</option>
+                                        <option value="100,12,1.5">Physical Therapy</option>
+                                        <option value="120,12,2">Mental Health Counseling</option>
+                                        <option value="90,8,2">Acupuncture</option>
+                                    </optgroup>
+                                    <optgroup label="Services">
+                                        <option value="25,12,3">Dry Cleaning</option>
+                                        <option value="500,1,3">Photography</option>
+                                        <option value="250,1,5">Tax Preparation</option>
+                                        <option value="350,2,3">Legal Services</option>
+                                        <option value="150,2,3">Computer Repair</option>
+                                    </optgroup>
+                                    <optgroup label="Education">
+                                        <option value="60,20,1">Tutoring Services</option>
+                                        <option value="100,12,2">Music Lessons</option>
+                                        <option value="80,12,1.5">Dance Classes</option>
+                                        <option value="70,10,1.5">Art Classes</option>
+                                    </optgroup>
+                                    <optgroup label="Retail">
+                                        <option value="800,0.5,5">Furniture Store</option>
+                                        <option value="120,6,2.5">Clothing Boutique</option>
+                                        <option value="350,1,4">Electronics Store</option>
+                                        <option value="75,6,3">Florist</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Business metrics display -->
+                            <div class="grid grid-cols-3 gap-4 p-4 bg-indigo-50 rounded-lg">
+                                <div class="text-center">
+                                    <div id="avgTransaction" class="text-lg font-bold text-indigo-600">$150</div>
+                                    <div class="text-xs text-gray-600">Avg Transaction</div>
+                                </div>
+                                <div class="text-center">
+                                    <div id="frequency" class="text-lg font-bold text-indigo-600">4x</div>
+                                    <div class="text-xs text-gray-600">Visits/Year</div>
+                                </div>
+                                <div class="text-center">
+                                    <div id="retention" class="text-lg font-bold text-indigo-600">2.5yr</div>
+                                    <div class="text-xs text-gray-600">Retention</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campaign Settings -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            Campaign Settings
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    NestKit Package
+                                </label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button id="starter" class="package-btn active p-3 rounded-lg border-2 border-indigo-500 bg-indigo-50 text-indigo-700 text-center transition-all" data-price="5.00" data-kits="180">
+                                        <div class="font-semibold">Starter</div>
+                                        <div class="text-xs text-gray-600">$5.00/kit</div>
+                                        <div class="text-xs text-gray-500">180-500 kits</div>
+                                    </button>
+                                    <button id="growth" class="package-btn p-3 rounded-lg border-2 border-gray-300 text-center transition-all hover:border-gray-400" data-price="4.50" data-kits="501">
+                                        <div class="font-semibold">Growth</div>
+                                        <div class="text-xs text-gray-600">$4.50/kit</div>
+                                        <div class="text-xs text-gray-500">501-1,000 kits</div>
+                                    </button>
+                                    <button id="premium" class="package-btn p-3 rounded-lg border-2 border-gray-300 text-center transition-all hover:border-gray-400" data-price="3.00" data-kits="1001">
+                                        <div class="font-semibold">Premium</div>
+                                        <div class="text-xs text-gray-600">$3.00/kit</div>
+                                        <div class="text-xs text-gray-500">1,001+ kits</div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                <p class="text-sm text-gray-600">
+                                    From <span id="kitCount" class="font-semibold">180</span> kits (15% conversion rate)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="space-y-6">
+                    <!-- Financial Projections -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                            Financial Projections
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 bg-blue-50 rounded-lg text-center">
+                                    <div id="ltv" class="text-2xl font-bold text-blue-600">$1,500</div>
+                                    <div class="text-sm text-gray-600">Customer LTV</div>
+                                </div>
+                                <div class="p-4 bg-green-50 rounded-lg text-center">
+                                    <div id="newCustomers" class="text-2xl font-bold text-green-600">27</div>
+                                    <div class="text-sm text-gray-600">New Customers</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 bg-orange-50 rounded-lg text-center">
+                                    <div id="investment" class="text-2xl font-bold text-orange-600">$900</div>
+                                    <div class="text-sm text-gray-600">NestKit Investment</div>
+                                </div>
+                                <div class="p-4 bg-purple-50 rounded-lg text-center">
+                                    <div id="netProfit" class="text-2xl font-bold text-purple-600">$39,600</div>
+                                    <div class="text-sm text-gray-600">Net Profit</div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 bg-gradient-to-r from-green-500 to-green-600 rounded-lg text-white text-center">
+                                <div id="roi" class="text-3xl font-bold">4,400%</div>
+                                <div class="text-green-100">Return on Investment</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Why NestKit Works -->
+                    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                        <h3 class="text-lg font-semibold mb-3">Why NestKit Works</h3>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <div class="font-semibold">99% Delivery Rate</div>
+                                <div class="text-indigo-100">Property-endorsed</div>
+                            </div>
+                            <div>
+                                <div class="font-semibold">15% Conversion Rate</div>
+                                <div class="text-indigo-100">Perfect timing</div>
+                            </div>
+                            <div>
+                                <div class="font-semibold">QR Code Tracking</div>
+                                <div class="text-indigo-100">Measurable results</div>
+                            </div>
+                            <div>
+                                <div class="font-semibold">Email Capture</div>
+                                <div class="text-indigo-100">Retargeting ready</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var currentBusiness = {
+            avgTransaction: 150,
+            frequency: 4,
+            retention: 2.5
+        };
+        
+        var currentPackage = {
+            price: 5.00,
+            kits: 180
+        };
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat().format(Math.round(num));
+        }
+
+        function updateCalculations() {
+            var ltv = currentBusiness.avgTransaction * currentBusiness.frequency * currentBusiness.retention;
+            var investment = currentPackage.price * currentPackage.kits;
+            var newCustomers = Math.round(currentPackage.kits * 0.15);
+            var totalRevenue = ltv * newCustomers;
+            var netProfit = totalRevenue - investment;
+            var roi = investment > 0 ? ((totalRevenue - investment) / investment) * 100 : 0;
+
+            document.getElementById('ltv').textContent = '$' + formatNumber(ltv);
+            document.getElementById('newCustomers').textContent = formatNumber(newCustomers);
+            document.getElementById('investment').textContent = '$' + formatNumber(investment);
+            document.getElementById('netProfit').textContent = '$' + formatNumber(netProfit);
+            document.getElementById('roi').textContent = formatNumber(roi) + '%';
+            document.getElementById('kitCount').textContent = formatNumber(currentPackage.kits);
+        }
+
+        function handleBusinessChange() {
+            var select = document.getElementById('businessSelect');
+            var values = select.value.split(',');
+            
+            currentBusiness.avgTransaction = parseFloat(values[0]);
+            currentBusiness.frequency = parseFloat(values[1]);
+            currentBusiness.retention = parseFloat(values[2]);
+            
+            document.getElementById('avgTransaction').textContent = '$' + currentBusiness.avgTransaction;
+            document.getElementById('frequency').textContent = currentBusiness.frequency + 'x';
+            document.getElementById('retention').textContent = currentBusiness.retention + 'yr';
+            
+            updateCalculations();
+        }
+
+        function handlePackageClick(button) {
+            var buttons = document.querySelectorAll('.package-btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active', 'border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
+                buttons[i].classList.add('border-gray-300');
+            }
+            
+            button.classList.add('active', 'border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
+            button.classList.remove('border-gray-300');
+            
+            currentPackage.price = parseFloat(button.getAttribute('data-price'));
+            currentPackage.kits = parseInt(button.getAttribute('data-kits'));
+            
+            updateCalculations();
+        }
+
+        document.getElementById('businessSelect').addEventListener('change', handleBusinessChange);
+        
+        document.getElementById('starter').addEventListener('click', function() {
+            handlePackageClick(this);
+        });
+        
+        document.getElementById('growth').addEventListener('click', function() {
+            handlePackageClick(this);
+        });
+        
+        document.getElementById('premium').addEventListener('click', function() {
+            handlePackageClick(this);
+        });
+
+        updateCalculations();
+    </script>
+</body>
+</html>
