@@ -97,7 +97,7 @@
 
         /* Hero */
 .hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/contact.jpg') center/cover;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/contact.png') center/cover;
     min-height: 100vh;
     display: flex;
     align-items: center;
