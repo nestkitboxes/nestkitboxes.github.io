@@ -1,0 +1,2599 @@
+    <script>
+        // Global variables
+        let userProgress = {
+            totalRedemptions: 8,
+            currentLevel: 'PLATINUM',
+            levelIcon: '💎'
+        };
+
+        const levels = {
+            'GOLD': { min: 0, max: 4, icon: '🥇', next: 'PLATINUM' },
+            'PLATINUM': { min: 5, max: 9, icon: '💎', next: 'BLACK' },
+            'BLACK': { min: 10, max: 19, icon: '◆', next: 'ELITE' },
+            'ELITE': { min: 20, max: 34, icon: '💠', next: 'DIAMOND' },
+            'DIAMOND': { min: 35, max: 999, icon: '💎', next: null }
+        };
+
+        // Form elements
+        const emailInput = document.getElementById('email');
+        const reservationInput = document.getElementById('reservation');
+        const accessBtn = document.getElementById('access-btn');
+
+        // Form validation
+        function validateForm() {
+            const email = emailInput.value.trim();
+            const reservation = reservationInput.value.trim();
+            
+            if (email && reservation && email.includes('@')) {
+                accessBtn.classList.add('active');
+            } else {
+                accessBtn.classList.remove('active');
+            }
+        }
+
+        // Level management functions
+        function updateLevelDisplay() {
+            const currentLevelData = levels[userProgress.currentLevel];
+            const redemptions = userProgress.totalRedemptions;
+            
+            // Update dashboard elements
+            const currentLevelElement = document.getElementById('current-level');
+            const levelIconElement = document.querySelector('.level-icon');
+            
+            if (currentLevelElement) currentLevelElement.textContent = userProgress.currentLevel;
+            if (levelIconElement) levelIconElement.textContent = currentLevelData.icon;
+            
+            // Update progress bar
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            if (currentLevelData.next) {
+                const nextLevelData = levels[currentLevelData.next];
+                const progress = ((redemptions - currentLevelData.min) / (nextLevelData.min - currentLevelData.min)) * 100;
+                
+                if (progressFill) progressFill.style.width = `${Math.min(progress, 100)}%`;
+                if (progressText) progressText.textContent = `${redemptions} of ${nextLevelData.min} offers redeemed to reach ${currentLevelData.next}`;
+            } else {
+                if (progressFill) progressFill.style.width = '100%';
+                if (progressText) progressText.textContent = 'Maximum level achieved!';
+            }
+
+            // Update account section elements if they exist
+            updateAccountElements();
+        }
+
+        function updateAccountElements() {
+            const currentLevelData = levels[userProgress.currentLevel];
+            
+            const elements = [
+                'profile-level-icon', 'profile-level-name',
+                'history-level-icon', 'history-level-name', 
+                'concierge-level-icon', 'concierge-level-name',
+                'total-redemptions'
+            ];
+
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (id.includes('icon')) {
+                        element.textContent = currentLevelData.icon;
+                    } else if (id.includes('name')) {
+                        element.textContent = userProgress.currentLevel;
+                    } else if (id === 'total-redemptions') {
+                        element.textContent = userProgress.totalRedemptions;
+                    }
+                }
+            });
+        }
+
+        function checkLevelUp(redemptions) {
+            for (const [levelName, levelData] of Object.entries(levels)) {
+                if (redemptions >= levelData.min && redemptions <= levelData.max) {
+                    if (userProgress.currentLevel !== levelName) {
+                        userProgress.currentLevel = levelName;
+                        userProgress.levelIcon = levelData.icon;
+                        updateLevelDisplay();
+                        alert(`🎉 Congratulations! You've reached ${levelName} level!`);
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Screen navigation
+        function showScreen(screenName) {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'none';
+            document.getElementById('account-screen').style.display = 'none';
+            document.getElementById('messages-screen').style.display = 'none';
+            
+            if (screenName === 'dashboard') {
+                document.getElementById('dashboard-screen').style.display = 'block';
+            } else if (screenName === 'account') {
+                document.getElementById('account-screen').style.display = 'block';
+            } else if (screenName === 'messages') {
+                document.getElementById('messages-screen').style.display = 'block';
+            }
+        }
+
+        // Account detail functions
+        function getAccountContent(detailType) {
+            const currentLevelData = levels[userProgress.currentLevel];
+            
+            switch(detailType) {
+                case 'profile':
+                    return `
+                        <div class="detail-section">
+                            <div class="editable-field">
+                                <div>
+                                    <div class="detail-label">NAME</div>
+                                    <div class="detail-value" id="profile-name">Distinguished Guest</div>
+                                </div>
+                                <button class="edit-btn" onclick="editField('name')">EDIT</button>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="editable-field">
+                                <div>
+                                    <div class="detail-label">EMAIL</div>
+                                    <div class="detail-value" id="profile-email">guest@email.com</div>
+                                </div>
+                                <button class="edit-btn" onclick="editField('email')">EDIT</button>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">RESERVATION</div>
+                            <div class="detail-value">RC24-XXXXX</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">MEMBERSHIP TIER</div>
+                            <div class="detail-value">
+                                <span id="profile-level-icon">${currentLevelData.icon}</span> 
+                                <span id="profile-level-name">${userProgress.currentLevel}</span>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="editable-field">
+                                <div>
+                                    <div class="detail-label">STAY DURATION</div>
+                                    <div class="detail-value" id="profile-stay">Dec 20-25, 2024</div>
+                                </div>
+                                <button class="edit-btn" onclick="editField('stay')">EDIT</button>
+                            </div>
+                        </div>
+                    `;
+                
+                case 'history':
+                    return `
+                        <div class="detail-section">
+                            <div class="detail-label">CURRENT LEVEL</div>
+                            <div class="detail-value">
+                                <span id="history-level-icon">${currentLevelData.icon}</span> 
+                                <span id="history-level-name">${userProgress.currentLevel}</span>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">TOTAL REDEMPTIONS</div>
+                            <div class="detail-value" id="total-redemptions">${userProgress.totalRedemptions}</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">RECENT REDEMPTIONS</div>
+                            <div style="margin-top: 1rem;">
+                                <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                    <div style="color: #c0c0c0; font-weight: 500;">TIFFANY & CO.</div>
+                                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">20% discount - Redeemed Dec 21</div>
+                                </div>
+                                <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                    <div style="color: #c0c0c0; font-weight: 500;">NOBU RESTAURANT</div>
+                                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">VIP reservation - Redeemed Dec 20</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">TOTAL VALUE SAVED</div>
+                            <div class="detail-value">$2,847</div>
+                        </div>
+                    `;
+                
+                case 'preferences':
+                    return `
+                        <div class="detail-section">
+                            <div class="detail-label">NOTIFICATION PREFERENCES</div>
+                            <div style="margin-top: 1rem;">
+                                <div class="toggle-container">
+                                    <span>New Offers</span>
+                                    <div class="toggle-switch active" onclick="togglePreference(this)">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="toggle-container">
+                                    <span>Expiration Alerts</span>
+                                    <div class="toggle-switch active" onclick="togglePreference(this)">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="toggle-container">
+                                    <span>Concierge Messages</span>
+                                    <div class="toggle-switch active" onclick="togglePreference(this)">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="toggle-container">
+                                    <span>Level Up Notifications</span>
+                                    <div class="toggle-switch active" onclick="togglePreference(this)">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                                <div class="toggle-container">
+                                    <span>Weekly Summary</span>
+                                    <div class="toggle-switch" onclick="togglePreference(this)">
+                                        <div class="toggle-slider"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">PREFERRED CATEGORIES</div>
+                            <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
+                                Luxury Dining • Fine Jewelry • Automotive • Wellness • Travel
+                            </div>
+                        </div>
+                    `;
+                
+                case 'concierge':
+                    return `
+                        <div class="detail-section">
+                            <div class="detail-label">24/7 SUPPORT CHANNELS</div>
+                            <div style="margin-top: 1rem;">
+                                <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                    <div style="color: #c0c0c0; font-weight: 500;">PHONE SUPPORT</div>
+                                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">+1 (800) VELOUR-1</div>
+                                </div>
+                                <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                    <div style="color: #c0c0c0; font-weight: 500;">EMAIL SUPPORT</div>
+                                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">concierge@velour.com</div>
+                                </div>
+                                <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                    <div style="color: #c0c0c0; font-weight: 500;">LIVE CHAT</div>
+                                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Available in app messaging</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">RESPONSE TIME</div>
+                            <div class="detail-value">< 5 minutes</div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="detail-label">YOUR CONCIERGE LEVEL</div>
+                            <div class="detail-value">
+                                <span id="concierge-level-icon">${currentLevelData.icon}</span> 
+                                <span id="concierge-level-name">${userProgress.currentLevel}</span> Priority
+                            </div>
+                        </div>
+                    `;
+                
+                default:
+                    return '<p>Content not found</p>';
+            }
+        }
+
+        function getAccountTitle(detailType) {
+            switch(detailType) {
+                case 'profile': return 'PROFILE INFORMATION';
+                case 'history': return 'REDEMPTION HISTORY';
+                case 'preferences': return 'PREFERENCES';
+                case 'concierge': return 'CONCIERGE SUPPORT';
+                default: return 'ACCOUNT DETAILS';
+            }
+        }
+
+        function openAccountDetail(detailType) {
+            const title = getAccountTitle(detailType);
+            const content = getAccountContent(detailType);
+            
+            document.getElementById('account-detail-body').innerHTML = `
+                <h2 style="font-size: 1.3rem; font-weight: 300; letter-spacing: 1px; margin-bottom: 2rem; color: #c0c0c0;">${title}</h2>
+                ${content}
+                <div style="margin-top: 2rem;">
+                    <button class="back-btn" onclick="closeAccountDetail()">BACK TO ACCOUNT</button>
+                </div>
+            `;
+            
+            document.getElementById('account-detail-modal').style.display = 'block';
+        }
+
+        function closeAccountDetail() {
+            document.getElementById('account-detail-modal').style.display = 'none';
+        }
+
+        function togglePreference(toggleElement) {
+            toggleElement.classList.toggle('active');
+        }
+
+        function editField(fieldType) {
+            let currentValue, fieldId;
+            
+            switch(fieldType) {
+                case 'name':
+                    fieldId = 'profile-name';
+                    break;
+                case 'email':
+                    fieldId = 'profile-email';
+                    break;
+                case 'stay':
+                    fieldId = 'profile-stay';
+                    break;
+                default:
+                    return;
+            }
+            
+            const fieldElement = document.getElementById(fieldId);
+            if (!fieldElement) return;
+            
+            currentValue = fieldElement.textContent;
+            const originalHTML = fieldElement.innerHTML;
+            
+            fieldElement.innerHTML = `
+                <input type="text" class="field-input" value="${currentValue}" id="edit-${fieldType}" style="margin-right: 0;">
+            `;
+            
+            const input = document.getElementById(`edit-${fieldType}`);
+            input.focus();
+            input.select();
+            
+            function saveEdit() {
+                const newValue = input.value.trim();
+                if (newValue) {
+                    fieldElement.textContent = newValue;
+                    alert('Profile updated successfully!');
+                } else {
+                    fieldElement.innerHTML = originalHTML;
+                }
+            }
+            
+            function cancelEdit() {
+                fieldElement.innerHTML = originalHTML;
+            }
+            
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    cancelEdit();
+                }
+            });
+        }
+
+        // Offers functionality
+        const offers = {
+            'tiffany': {
+                brand: 'TIFFANY & CO.',
+                value: '20% OFF',
+                description: 'Exclusive discount on jewelry collections including engagement rings, necklaces, and luxury accessories. Valid at Tiffany & Co. flagship stores.',
+                type: 'in-store',
+                redemption: 'Present this offer in-store along with your hotel key card.'
+            },
+            'tesla': {
+                brand: 'TESLA',
+                value: 'COMPLIMENTARY',
+                description: '3-day luxury vehicle experience with Model S Plaid. Includes full autopilot features and premium connectivity.',
+                type: 'qr',
+                redemption: 'Scan QR code to schedule your vehicle delivery.',
+                qrData: 'https://tesla.com/experience/rc24-guest-access?code=VL2024RC'
+            },
+            'nobu': {
+                brand: 'NOBU',
+                value: 'VIP ACCESS',
+                description: 'Priority reservations and exclusive omakase experience with Chef Nobu\'s signature dishes.',
+                type: 'email',
+                redemption: 'Enter your email to receive priority booking access.'
+            },
+            'spa': {
+                brand: 'SPA EXPERIENCE',
+                value: '$500 CREDIT',
+                description: 'Premium wellness treatments including deep tissue massage, facial treatments, and personalized aromatherapy.',
+                type: 'qr',
+                redemption: 'Scan QR code to book your spa appointment.',
+                qrData: 'https://ritzcarlton.com/spa/book?credit=500&guest=velour'
+            },
+            'private-jet': {
+                brand: 'NETJETS',
+                value: '50% OFF',
+                description: 'First private jet booking with Cessna Citation X+. Includes premium catering and ground transportation.',
+                type: 'email',
+                redemption: 'Enter your email to connect with a private aviation specialist.'
+            },
+            'rolex': {
+                brand: 'ROLEX',
+                value: 'EXCLUSIVE',
+                description: 'Private viewing of limited edition timepieces including Submariner and Daytona collections.',
+                type: 'in-store',
+                redemption: 'Present this offer for your private appointment.'
+            },
+            'michelin': {
+                brand: 'MICHELIN DINING',
+                value: 'PRIORITY',
+                description: 'Curated reservations at the city\'s finest Michelin-starred restaurants with sommelier wine pairings.',
+                type: 'qr',
+                redemption: 'Scan QR code to view available restaurants and times.',
+                qrData: 'https://michelinguide.com/priority-booking?partner=velour&city=orlando'
+            }
+        };
+
+        function openOffer(offerId) {
+            const offer = offers[offerId];
+            if (!offer) return;
+            
+            let redeemContent = '';
+            
+            if (offer.type === 'qr') {
+                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(offer.qrData)}`;
+                redeemContent = `
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px; border-radius: 10px;">
+                    </div>
+                    <div class="redeem-section">
+                        <p style="margin-bottom: 1rem; color: rgba(255, 255, 255, 0.8); text-align: center;">${offer.redemption}</p>
+                        <button class="redeem-btn" onclick="markAsRedeemed('${offerId}')">MARK AS REDEEMED</button>
+                    </div>
+                `;
+            } else if (offer.type === 'email') {
+                redeemContent = `
+                    <div class="form-group">
+                        <input type="email" id="redeem-email" placeholder="Enter your email address" style="margin-bottom: 1rem;">
+                    </div>
+                    <div class="redeem-section">
+                        <button class="redeem-btn" onclick="submitEmail('${offerId}')">SUBMIT EMAIL</button>
+                    </div>
+                `;
+            } else {
+                redeemContent = `
+                    <div class="redeem-section">
+                        <p style="margin-bottom: 1rem; color: rgba(255, 255, 255, 0.8); text-align: center;">${offer.redemption}</p>
+                        <button class="redeem-btn" onclick="markAsRedeemed('${offerId}')">MARK AS USED</button>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('modal-content-body').innerHTML = `
+                <div class="offer-header" style="margin-bottom: 2rem;">
+                    <div class="offer-brand" style="font-size: 1.3rem;">${offer.brand}</div>
+                    <div class="offer-value" style="font-size: 1rem;">${offer.value}</div>
+                </div>
+                <div class="offer-description" style="margin-bottom: 2rem; font-size: 1rem; line-height: 1.6;">${offer.description}</div>
+                ${redeemContent}
+            `;
+            
+            document.getElementById('offer-modal').style.display = 'block';
+        }
+
+        function closeOffer() {
+            document.getElementById('offer-modal').style.display = 'none';
+        }
+
+        function markAsRedeemed(offerId) {
+            userProgress.totalRedemptions++;
+            checkLevelUp(userProgress.totalRedemptions);
+            updateLevelDisplay();
+            alert('Offer redeemed successfully! You will receive confirmation shortly.');
+            closeOffer();
+        }
+
+        function submitEmail(offerId) {
+            const email = document.getElementById('redeem-email');
+            if (email && email.value && email.value.includes('@')) {
+                userProgress.totalRedemptions++;
+                checkLevelUp(userProgress.totalRedemptions);
+                updateLevelDisplay();
+                alert('Email submitted successfully! You will receive booking information shortly.');
+                closeOffer();
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        }
+
+        // Messages functionality
+        const messages = {
+            'new-offers': {
+                sender: 'VELOUR CONCIERGE',
+                time: '2 MIN AGO',
+                subject: 'New Exclusive Offers Available',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Distinguished Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">We're delighted to inform you that new exclusive offers have been added to your Velour collection. These limited-time luxury experiences have been carefully curated to enhance your stay at The Ritz-Carlton.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">NEW ADDITIONS:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Exclusive Rolex private viewing</li>
+                            <li>Michelin-starred dining priority access</li>
+                            <li>Enhanced spa treatment credits</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">These offers are available for a limited time and subject to availability. We recommend reviewing them at your earliest convenience.</p>
+                    <p style="line-height: 1.6;">Sincerely,<br>The Velour Concierge Team</p>
+                `
+            },
+            'ritz-carlton': {
+                sender: 'THE RITZ-CARLTON',
+                time: '15 MIN AGO',
+                subject: 'Welcome to The Ritz-Carlton',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Valued Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Welcome to The Ritz-Carlton. Your suite is ready and we've prepared something special to mark the beginning of your luxury experience with us.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">YOUR SUITE AMENITIES:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Champagne welcome service</li>
+                            <li>Premium turndown service</li>
+                            <li>24-hour dedicated butler</li>
+                            <li>Access to Club Level amenities</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Your Velour exclusive perks are now active and ready for your enjoyment. Should you require any assistance, our concierge team is available 24/7.</p>
+                    <p style="line-height: 1.6;">With warmest regards,<br>The Ritz-Carlton Team</p>
+                `
+            },
+            'spa-reminder': {
+                sender: 'SPA EXPERIENCE',
+                time: '2 HOURS AGO',
+                subject: 'Spa Credit Expiration Reminder',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">This is a gentle reminder that your $500 spa credit will expire in 48 hours. We would love to help you experience our premium wellness treatments before your departure.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">RECOMMENDED TREATMENTS:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Signature Deep Tissue Massage (90 min)</li>
+                            <li>Diamond Radiance Facial (75 min)</li>
+                            <li>Aromatherapy Wellness Journey (120 min)</li>
+                            <li>Couples Retreat Package (3 hours)</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">To book your appointment, simply scan the QR code in your Velour app or call our spa concierge directly.</p>
+                    <p style="line-height: 1.6;">Wellness awaits,<br>The Spa Team</p>
+                `
+            },
+            'tesla-update': {
+                sender: 'TESLA EXPERIENCE',
+                time: 'YESTERDAY',
+                subject: 'Your Model S Plaid is Ready',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Velour Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Your complimentary Tesla Model S Plaid experience is ready for pickup. We're excited to provide you with three days of the ultimate luxury electric vehicle experience.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">VEHICLE FEATURES:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Full Self-Driving Capability</li>
+                            <li>Premium Connectivity Package</li>
+                            <li>Tri-Motor All-Wheel Drive</li>
+                            <li>Premium Interior Package</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Delivery is available directly to The Ritz-Carlton valet, or you can visit our experience center. All insurance and charging costs are included.</p>
+                    <p style="line-height: 1.6;">Drive the future,<br>Tesla Experience Team</p>
+                `
+            }
+        };
+
+        function openMessage(messageId) {
+            const message = messages[messageId];
+            if (!message) return;
+            
+            document.getElementById('message-content-body').innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: #c0c0c0; font-size: 1.2rem; margin-bottom: 0.5rem;">${message.subject}</h3>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 1rem;">${message.sender} • ${message.time}</div>
+                </div>
+                <div style="color: rgba(255,255,255,0.8);">
+                    ${message.content}
+                </div>
+                <div style="margin-top: 2rem;">
+                    <button class="back-btn" onclick="closeMessage()">BACK TO MESSAGES</button>
+                </div>
+            `;
+            document.getElementById('message-modal').style.display = 'block';
+        }
+
+        function closeMessage() {
+            document.getElementById('message-modal').style.display = 'none';
+        }
+
+        // Event listeners
+        emailInput.addEventListener('input', validateForm);
+        reservationInput.addEventListener('input', validateForm);
+
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = emailInput.value;
+            const reservation = reservationInput.value;
+            
+            if (email && reservation && email.includes('@')) {
+                showScreen('dashboard');
+            }
+        });
+
+        // Modal close events
+        document.getElementById('offer-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOffer();
+            }
+        });
+
+        document.getElementById('account-detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAccountDetail();
+            }
+        });
+
+        document.getElementById('message-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMessage();
+            }
+        });
+
+        // Initialize app when page loads
+        window.addEventListener('load', function() {
+            updateLevelDisplay();
+        });
+
+        // PWA installation prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+    </script>    <script>
+        // Form validation and button activation
+        const emailInput = document.getElementById('email');
+        const reservationInput = document.getElementById('reservation');
+        const accessBtn = document.getElementById('access-btn');
+
+        function validateForm() {
+            const email = emailInput.value.trim();
+            const reservation = reservationInput.value.trim();
+            
+            if (email && reservation && email.includes('@')) {
+                accessBtn.classList.add('active');
+            } else {
+                accessBtn.classList.remove('active');
+            }
+        }
+
+        emailInput.addEventListener('input', validateForm);
+        reservationInput.addEventListener('input', validateForm);
+
+        // User progress tracking
+        let userProgress = {
+            totalRedemptions: 8,
+            currentLevel: 'PLATINUM',
+            levelIcon: '💎'
+        };
+
+        const levels = {
+            'GOLD': { min: 0, max: 4, icon: '🥇', next: 'PLATINUM' },
+            'PLATINUM': { min: 5, max: 9, icon: '💎', next: 'BLACK' },
+            'BLACK': { min: 10, max: 19, icon: '◆', next: 'ELITE' },
+            'ELITE': { min: 20, max: 34, icon: '💠', next: 'DIAMOND' },
+            'DIAMOND': { min: 35, max: 999, icon: '💎', next: null }
+        };
+
+        function updateLevelDisplay() {
+            const currentLevelData = levels[userProgress.currentLevel];
+            const redemptions = userProgress.totalRedemptions;
+            
+            // Update dashboard
+            const currentLevelElement = document.getElementById('current-level');
+            const levelIconElement = document.querySelector('.level-icon');
+            
+            if (currentLevelElement) currentLevelElement.textContent = userProgress.currentLevel;
+            if (levelIconElement) levelIconElement.textContent = currentLevelData.icon;
+            
+            // Update account sections
+            const profileLevelIcon = document.getElementById('profile-level-icon');
+            const profileLevelName = document.getElementById('profile-level-name');
+            const historyLevelIcon = document.getElementById('history-level-icon');
+            const historyLevelName = document.getElementById('history-level-name');
+            const conciergeLevelIcon = document.getElementById('concierge-level-icon');
+            const conciergeLevelName = document.getElementById('concierge-level-name');
+            const totalRedemptionsElement = document.getElementById('total-redemptions');
+            
+            if (profileLevelIcon) profileLevelIcon.textContent = currentLevelData.icon;
+            if (profileLevelName) profileLevelName.textContent = userProgress.currentLevel;
+            if (historyLevelIcon) historyLevelIcon.textContent = currentLevelData.icon;
+            if (historyLevelName) historyLevelName.textContent = userProgress.currentLevel;
+            if (conciergeLevelIcon) conciergeLevelIcon.textContent = currentLevelData.icon;
+            if (conciergeLevelName) conciergeLevelName.textContent = userProgress.currentLevel;
+            if (totalRedemptionsElement) totalRedemptionsElement.textContent = redemptions;
+            
+            // Update progress bar
+            if (currentLevelData.next) {
+                const nextLevelData = levels[currentLevelData.next];
+                const needed = nextLevelData.min - redemptions;
+                const progress = ((redemptions - currentLevelData.min) / (nextLevelData.min - currentLevelData.min)) * 100;
+                
+                const progressFill = document.getElementById('progress-fill');
+                const progressText = document.getElementById('progress-text');
+                
+                if (progressFill) progressFill.style.width = `${Math.min(progress, 100)}%`;
+                if (progressText) progressText.textContent = `${redemptions} of ${nextLevelData.min} offers redeemed to reach ${currentLevelData.next}`;
+            } else {
+                const progressFill = document.getElementById('progress-fill');
+                const progressText = document.getElementById('progress-text');
+                
+                if (progressFill) progressFill.style.width = '100%';
+                if (progressText) progressText.textContent = 'Maximum level achieved!';
+            }
+        }
+
+        function checkLevelUp(redemptions) {
+            for (const [levelName, levelData] of Object.entries(levels)) {
+                if (redemptions >= levelData.min && redemptions <= levelData.max) {
+                    if (userProgress.currentLevel !== levelName) {
+                        userProgress.currentLevel = levelName;
+                        userProgress.levelIcon = levelData.icon;
+                        updateLevelDisplay();
+                        
+                        // Show level up animation/notification
+                        if (redemptions > userProgress.totalRedemptions) {
+                            alert(`🎉 Congratulations! You've reached ${levelName} level!`);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Account details
+        const accountDetails = {
+            'profile': {
+                title: 'PROFILE INFORMATION',
+                content: `
+                    <div class="detail-section">
+                        <div class="editable-field">
+                            <div>
+                                <div class="detail-label">NAME</div>
+                                <div class="detail-value" id="profile-name">Distinguished Guest</div>
+                            </div>
+                            <button class="edit-btn" onclick="editField('name')">EDIT</button>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="editable-field">
+                            <div>
+                                <div class="detail-label">EMAIL</div>
+                                <div class="detail-value" id="profile-email">guest@email.com</div>
+                            </div>
+                            <button class="edit-btn" onclick="editField('email')">EDIT</button>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">RESERVATION</div>
+                        <div class="detail-value">RC24-XXXXX</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">MEMBERSHIP TIER</div>
+                        <div class="detail-value"><span id="profile-level-icon">💎</span> <span id="profile-level-name">PLATINUM</span></div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="editable-field">
+                            <div>
+                                <div class="detail-label">STAY DURATION</div>
+                                <div class="detail-value" id="profile-stay">Dec 20-25, 2024</div>
+                            </div>
+                            <button class="edit-btn" onclick="editField('stay')">EDIT</button>
+                        </div>
+                    </div>
+                `
+            },
+            'history': {
+                title: 'REDEMPTION HISTORY',
+                content: `
+                    <div class="detail-section">
+                        <div class="detail-label">CURRENT LEVEL</div>
+                        <div class="detail-value"><span id="history-level-icon">💎</span> <span id="history-level-name">PLATINUM</span></div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">TOTAL REDEMPTIONS</div>
+                        <div class="detail-value" id="total-redemptions">8</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">RECENT REDEMPTIONS</div>
+                        <div style="margin-top: 1rem;">
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                <div style="color: #c0c0c0; font-weight: 500;">TIFFANY & CO.</div>
+                                <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">20% discount - Redeemed Dec 21</div>
+                            </div>
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                <div style="color: #c0c0c0; font-weight: 500;">NOBU RESTAURANT</div>
+                                <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">VIP reservation - Redeemed Dec 20</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">TOTAL VALUE SAVED</div>
+                        <div class="detail-value">$2,847</div>
+                    </div>
+                `
+            },
+            'preferences': {
+                title: 'PREFERENCES',
+                content: `
+                    <div class="detail-section">
+                        <div class="detail-label">NOTIFICATION PREFERENCES</div>
+                        <div style="margin-top: 1rem;">
+                            <div class="toggle-container">
+                                <span>New Offers</span>
+                                <div class="toggle-switch active" onclick="togglePreference(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <span>Expiration Alerts</span>
+                                <div class="toggle-switch active" onclick="togglePreference(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <span>Concierge Messages</span>
+                                <div class="toggle-switch active" onclick="togglePreference(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <span>Level Up Notifications</span>
+                                <div class="toggle-switch active" onclick="togglePreference(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <span>Weekly Summary</span>
+                                <div class="toggle-switch" onclick="togglePreference(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">PREFERRED CATEGORIES</div>
+                        <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
+                            Luxury Dining • Fine Jewelry • Automotive • Wellness • Travel
+                        </div>
+                    </div>
+                `
+            },
+            'concierge': {
+                title: 'CONCIERGE SUPPORT',
+                content: `
+                    <div class="detail-section">
+                        <div class="detail-label">24/7 SUPPORT CHANNELS</div>
+                        <div style="margin-top: 1rem;">
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                <div style="color: #c0c0c0; font-weight: 500;">PHONE SUPPORT</div>
+                                <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">+1 (800) VELOUR-1</div>
+                            </div>
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                <div style="color: #c0c0c0; font-weight: 500;">EMAIL SUPPORT</div>
+                                <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">concierge@velour.com</div>
+                            </div>
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                                <div style="color: #c0c0c0; font-weight: 500;">LIVE CHAT</div>
+                                <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Available in app messaging</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">RESPONSE TIME</div>
+                        <div class="detail-value">< 5 minutes</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">YOUR CONCIERGE LEVEL</div>
+                        <div class="detail-value"><span id="concierge-level-icon">💎</span> <span id="concierge-level-name">PLATINUM</span> Priority</div>
+                    </div>
+                `
+            }
+        };
+
+        // Registration form handling
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = emailInput.value;
+            const reservation = reservationInput.value;
+            
+            if (email && reservation && email.includes('@')) {
+                showScreen('dashboard');
+            }
+        });
+
+        // Screen navigation
+        function showScreen(screenName) {
+            // Hide all screens
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'none';
+            document.getElementById('account-screen').style.display = 'none';
+            document.getElementById('messages-screen').style.display = 'none';
+            
+            // Show selected screen
+            if (screenName === 'dashboard') {
+                document.getElementById('dashboard-screen').style.display = 'block';
+            } else if (screenName === 'account') {
+                document.getElementById('account-screen').style.display = 'block';
+            } else if (screenName === 'messages') {
+                document.getElementById('messages-screen').style.display = 'block';
+            }
+        }
+
+        // Offer details
+        const offers = {
+            'tiffany': {
+                brand: 'TIFFANY & CO.',
+                value: '20% OFF',
+                description: 'Exclusive discount on jewelry collections including engagement rings, necklaces, and luxury accessories. Valid at Tiffany & Co. flagship stores.',
+                type: 'in-store',
+                redemption: 'Present this offer in-store along with your hotel key card.'
+            },
+            'tesla': {
+                brand: 'TESLA',
+                value: 'COMPLIMENTARY',
+                description: '3-day luxury vehicle experience with Model S Plaid. Includes full autopilot features and premium connectivity.',
+                type: 'qr',
+                redemption: 'Scan QR code to schedule your vehicle delivery.',
+                qrData: 'https://tesla.com/experience/rc24-guest-access?code=VL2024RC'
+            },
+            'nobu': {
+                brand: 'NOBU',
+                value: 'VIP ACCESS',
+                description: 'Priority reservations and exclusive omakase experience with Chef Nobu\'s signature dishes.',
+                type: 'email',
+                redemption: 'Enter your email to receive priority booking access.'
+            },
+            'spa': {
+                brand: 'SPA EXPERIENCE',
+                value: '$500 CREDIT',
+                description: 'Premium wellness treatments including deep tissue massage, facial treatments, and personalized aromatherapy.',
+                type: 'qr',
+                redemption: 'Scan QR code to book your spa appointment.',
+                qrData: 'https://ritzcarlton.com/spa/book?credit=500&guest=velour'
+            },
+            'private-jet': {
+                brand: 'NETJETS',
+                value: '50% OFF',
+                description: 'First private jet booking with Cessna Citation X+. Includes premium catering and ground transportation.',
+                type: 'email',
+                redemption: 'Enter your email to connect with a private aviation specialist.'
+            },
+            'rolex': {
+                brand: 'ROLEX',
+                value: 'EXCLUSIVE',
+                description: 'Private viewing of limited edition timepieces including Submariner and Daytona collections.',
+                type: 'in-store',
+                redemption: 'Present this offer for your private appointment.'
+            },
+            'michelin': {
+                brand: 'MICHELIN DINING',
+                value: 'PRIORITY',
+                description: 'Curated reservations at the city\'s finest Michelin-starred restaurants with sommelier wine pairings.',
+                type: 'qr',
+                redemption: 'Scan QR code to view available restaurants and times.',
+                qrData: 'https://michelinguide.com/priority-booking?partner=velour&city=orlando'
+            }
+        };
+
+        function openOffer(offerId) {
+            const offer = offers[offerId];
+            let redeemContent = '';
+            
+            if (offer.type === 'qr') {
+                // Generate actual QR code using a service or replace with your QR code
+                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(offer.qrData)}`;
+                redeemContent = `
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px; border-radius: 10px;">
+                    </div>
+                    <div class="redeem-section">
+                        <p style="margin-bottom: 1rem; color: rgba(255, 255, 255, 0.8); text-align: center;">${offer.redemption}</p>
+                        <button class="redeem-btn" onclick="markAsRedeemed('${offerId}')">MARK AS REDEEMED</button>
+                    </div>
+                `;
+            } else if (offer.type === 'email') {
+                redeemContent = `
+                    <div class="form-group">
+                        <input type="email" id="redeem-email" placeholder="Enter your email address" style="margin-bottom: 1rem;">
+                    </div>
+                    <div class="redeem-section">
+                        <button class="redeem-btn" onclick="submitEmail('${offerId}')">SUBMIT EMAIL</button>
+                    </div>
+                `;
+            } else {
+                redeemContent = `
+                    <div class="redeem-section">
+                        <p style="margin-bottom: 1rem; color: rgba(255, 255, 255, 0.8); text-align: center;">${offer.redemption}</p>
+                        <button class="redeem-btn" onclick="markAsRedeemed('${offerId}')">MARK AS USED</button>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('modal-content-body').innerHTML = `
+                <div class="offer-header" style="margin-bottom: 2rem;">
+                    <div class="offer-brand" style="font-size: 1.3rem;">${offer.brand}</div>
+                    <div class="offer-value" style="font-size: 1rem;">${offer.value}</div>
+                </div>
+                <div class="offer-description" style="margin-bottom: 2rem; font-size: 1rem; line-height: 1.6;">${offer.description}</div>
+                ${redeemContent}
+            `;
+            
+            document.getElementById('offer-modal').style.display = 'block';
+        }
+
+        function closeOffer() {
+            document.getElementById('offer-modal').style.display = 'none';
+        }
+
+        function markAsRedeemed(offerId) {
+            userProgress.totalRedemptions++;
+            checkLevelUp(userProgress.totalRedemptions);
+            updateLevelDisplay();
+            
+            alert('Offer redeemed successfully! You will receive confirmation shortly.');
+            closeOffer();
+        }
+
+        function submitEmail(offerId) {
+            const email = document.getElementById('redeem-email').value;
+            if (email && email.includes('@')) {
+                userProgress.totalRedemptions++;
+                checkLevelUp(userProgress.totalRedemptions);
+                updateLevelDisplay();
+                
+                alert('Email submitted successfully! You will receive booking information shortly.');
+                closeOffer();
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        }
+
+        function openAccountDetail(detailType) {
+            const detail = accountDetails[detailType];
+            document.getElementById('account-detail-body').innerHTML = `
+                <h2 style="font-size: 1.3rem; font-weight: 300; letter-spacing: 1px; margin-bottom: 2rem; color: #c0c0c0;">${detail.title}</h2>
+                ${detail.content}
+                <div style="margin-top: 2rem;">
+                    <button class="back-btn" onclick="closeAccountDetail()">BACK TO ACCOUNT</button>
+                </div>
+            `;
+            document.getElementById('account-detail-modal').style.display = 'block';
+            
+            // Update level displays after opening
+            setTimeout(updateLevelDisplay, 100);
+        }
+
+        function closeAccountDetail() {
+            document.getElementById('account-detail-modal').style.display = 'none';
+        }
+
+        function togglePreference(toggleElement) {
+            toggleElement.classList.toggle('active');
+        }
+
+        function editField(fieldType) {
+            let currentValue, fieldId;
+            
+            switch(fieldType) {
+                case 'name':
+                    currentValue = document.getElementById('profile-name').textContent;
+                    fieldId = 'profile-name';
+                    break;
+                case 'email':
+                    currentValue = document.getElementById('profile-email').textContent;
+                    fieldId = 'profile-email';
+                    break;
+                case 'stay':
+                    currentValue = document.getElementById('profile-stay').textContent;
+                    fieldId = 'profile-stay';
+                    break;
+            }
+            
+            const fieldElement = document.getElementById(fieldId);
+            const originalHTML = fieldElement.innerHTML;
+            
+            fieldElement.innerHTML = `
+                <input type="text" class="field-input" value="${currentValue}" id="edit-${fieldType}" style="margin-right: 0;">
+            `;
+            
+            const input = document.getElementById(`edit-${fieldType}`);
+            input.focus();
+            input.select();
+            
+            function saveEdit() {
+                const newValue = input.value.trim();
+                if (newValue) {
+                    fieldElement.textContent = newValue;
+                    
+                    // Update the accountDetails for future renders
+                    if (fieldType === 'name') {
+                        accountDetails.profile.content = accountDetails.profile.content.replace(
+                            /Distinguished Guest/g, newValue
+                        );
+                    } else if (fieldType === 'email') {
+                        accountDetails.profile.content = accountDetails.profile.content.replace(
+                            /guest@email\.com/g, newValue
+                        );
+                    }
+                    
+                    alert('Profile updated successfully!');
+                } else {
+                    fieldElement.innerHTML = originalHTML;
+                }
+            }
+            
+            function cancelEdit() {
+                fieldElement.innerHTML = originalHTML;
+            }
+            
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    cancelEdit();
+                }
+            });
+        }
+
+        // Messages
+        const messages = {
+            'new-offers': {
+                sender: 'VELOUR CONCIERGE',
+                time: '2 MIN AGO',
+                subject: 'New Exclusive Offers Available',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Distinguished Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">We're delighted to inform you that new exclusive offers have been added to your Velour collection. These limited-time luxury experiences have been carefully curated to enhance your stay at The Ritz-Carlton.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">NEW ADDITIONS:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Exclusive Rolex private viewing</li>
+                            <li>Michelin-starred dining priority access</li>
+                            <li>Enhanced spa treatment credits</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">These offers are available for a limited time and subject to availability. We recommend reviewing them at your earliest convenience.</p>
+                    <p style="line-height: 1.6;">Sincerely,<br>The Velour Concierge Team</p>
+                `
+            },
+            'ritz-carlton': {
+                sender: 'THE RITZ-CARLTON',
+                time: '15 MIN AGO',
+                subject: 'Welcome to The Ritz-Carlton',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Valued Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Welcome to The Ritz-Carlton. Your suite is ready and we've prepared something special to mark the beginning of your luxury experience with us.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">YOUR SUITE AMENITIES:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Champagne welcome service</li>
+                            <li>Premium turndown service</li>
+                            <li>24-hour dedicated butler</li>
+                            <li>Access to Club Level amenities</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Your Velour exclusive perks are now active and ready for your enjoyment. Should you require any assistance, our concierge team is available 24/7.</p>
+                    <p style="line-height: 1.6;">With warmest regards,<br>The Ritz-Carlton Team</p>
+                `
+            },
+            'spa-reminder': {
+                sender: 'SPA EXPERIENCE',
+                time: '2 HOURS AGO',
+                subject: 'Spa Credit Expiration Reminder',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">This is a gentle reminder that your $500 spa credit will expire in 48 hours. We would love to help you experience our premium wellness treatments before your departure.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">RECOMMENDED TREATMENTS:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Signature Deep Tissue Massage (90 min)</li>
+                            <li>Diamond Radiance Facial (75 min)</li>
+                            <li>Aromatherapy Wellness Journey (120 min)</li>
+                            <li>Couples Retreat Package (3 hours)</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">To book your appointment, simply scan the QR code in your Velour app or call our spa concierge directly.</p>
+                    <p style="line-height: 1.6;">Wellness awaits,<br>The Spa Team</p>
+                `
+            },
+            'tesla-update': {
+                sender: 'TESLA EXPERIENCE',
+                time: 'YESTERDAY',
+                subject: 'Your Model S Plaid is Ready',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Velour Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Your complimentary Tesla Model S Plaid experience is ready for pickup. We're excited to provide you with three days of the ultimate luxury electric vehicle experience.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">VEHICLE FEATURES:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Full Self-Driving Capability</li>
+                            <li>Premium Connectivity Package</li>
+                            <li>Tri-Motor All-Wheel Drive</li>
+                            <li>Premium Interior Package</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Delivery is available directly to The Ritz-Carlton valet, or you can visit our experience center. All insurance and charging costs are included.</p>
+                    <p style="line-height: 1.6;">Drive the future,<br>Tesla Experience Team</p>
+                `
+            }
+        };
+
+        function openMessage(messageId) {
+            const message = messages[messageId];
+            document.getElementById('message-content-body').innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: #c0c0c0; font-size: 1.2rem; margin-bottom: 0.5rem;">${message.subject}</h3>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 1rem;">${message.sender} • ${message.time}</div>
+                </div>
+                <div style="color: rgba(255,255,255,0.8);">
+                    ${message.content}
+                </div>
+                <div style="margin-top: 2rem;">
+                    <button class="back-btn" onclick="closeMessage()">BACK TO MESSAGES</button>
+                </div>
+            `;
+            document.getElementById('message-modal').style.display = 'block';
+        }
+
+        function closeMessage() {
+            document.getElementById('message-modal').style.display = 'none';
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('offer-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOffer();
+            }
+        });
+
+        document.getElementById('account-detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAccountDetail();
+            }
+        });
+
+        document.getElementById('message-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMessage();
+            }
+        });
+
+        // PWA installation prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        // Initialize level display on page load
+        window.addEventListener('load', function() {
+            updateLevelDisplay();
+        });
+                <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velour - Exclusive Guest Experience</title>
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiVmVsb3VyIiwic2hvcnRfbmFtZSI6IlZlbG91ciIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDAwMDAwIiwidGhlbWVfY29sb3IiOiIjMDAwMDAwIn0=">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1rem;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            font-weight: 100;
+            letter-spacing: 3px;
+            color: #c0c0c0;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-subtitle {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .logo-image {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 1rem;
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        .hotel-brand {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hotel-brand h2 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            color: #c0c0c0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .btn-primary.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .btn-primary.active:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .dashboard {
+            display: none;
+            padding: 1rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-message {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .welcome-message h3 {
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            color: #c0c0c0;
+        }
+
+        .welcome-message p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 100;
+            color: #c0c0c0;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .offers-section h3 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            color: #c0c0c0;
+        }
+
+        .offers-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .offer-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .offer-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .offer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .offer-brand {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #c0c0c0;
+            letter-spacing: 1px;
+        }
+
+        .offer-value {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .offer-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+
+        .offer-type {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .offer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: white;
+            margin: 1rem auto;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-size: 0.8rem;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1px;
+        }
+
+        .screen {
+            min-height: calc(100vh - 100px);
+            padding-bottom: 2rem;
+        }
+
+        .account-screen, .messages-screen {
+            display: none;
+            padding: 2rem;
+        }
+
+        .account-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .account-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .message-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .message-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .message-item.unread {
+            border-color: #c0c0c0;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-sender {
+            font-weight: 500;
+            color: #c0c0c0;
+            letter-spacing: 1px;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .message-preview {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+
+        .redeem-section {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .redeem-btn {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .redeem-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%);
+        }
+
+        .message-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #c0c0c0;
+            border-radius: 50%;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+        }
+
+        .level-status {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .level-icon {
+            font-size: 1.2rem;
+        }
+
+        .level-name {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #c0c0c0;
+        }
+
+        .level-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c0c0c0, #ffffff);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #c0c0c0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(25px);
+        }
+
+        .edit-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .edit-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .editable-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .field-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            padding: 0.8rem;
+            font-size: 1rem;
+            width: 100%;
+            margin-right: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .field-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .account-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .detail-content {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: #c0c0c0;
+            margin-bottom: 1rem;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen">
+            <div class="glass-container">
+                <div class="logo">
+                    <!-- Replace with your actual logo -->
+                    <img src="https://via.placeholder.com/120x60/c0c0c0/000000?text=VELOUR" alt="Velour Logo" class="logo-image">
+                    <div class="logo-subtitle">Exclusive Guest Experience</div>
+                </div>
+                
+                <div class="hotel-brand">
+                    <h2>THE RITZ-CARLTON</h2>
+                </div>
+
+                <form id="registration-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="your.email@domain.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reservation">Reservation Number</label>
+                        <input type="text" id="reservation" placeholder="RC24-XXXXX" required>
+                    </div>
+                    
+                    <button type="submit" id="access-btn" class="btn-primary">ACCESS EXCLUSIVE PERKS</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" class="screen dashboard">
+            <div class="dashboard-header">
+                <div class="logo">
+                    <img src="https://via.placeholder.com/100x50/c0c0c0/000000?text=VELOUR" alt="Velour Logo" class="logo-image" style="max-width: 100px;">
+                </div>
+            </div>
+
+            <div class="welcome-message">
+                <h3>Welcome, Distinguished Guest</h3>
+                <p>Discover your curated collection of exclusive experiences at The Ritz-Carlton</p>
+            </div>
+
+            <div class="level-status">
+                <div class="level-badge">
+                    <div class="level-icon">💎</div>
+                    <div class="level-name" id="current-level">PLATINUM</div>
+                </div>
+                <div class="level-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 40%;"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">8 of 20 offers redeemed to reach Diamond</div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">AVAILABLE</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">REDEEMED</div>
+                </div>
+            </div>
+
+            <div class="offers-section">
+                <h3>Exclusive Perks</h3>
+                <div class="offers-grid">
+                    <div class="offer-card" onclick="openOffer('tiffany')">
+                        <div class="offer-header">
+                            <div class="offer-brand">TIFFANY & CO.</div>
+                            <div class="offer-value">20% OFF</div>
+                        </div>
+                        <div class="offer-description">Exclusive discount on jewelry collections. Valid at select locations.</div>
+                        <div class="offer-type">REDEEM IN-STORE</div>
+                    </div>
+
+                    <div class="offer-card" onclick="openOffer('tesla')">
+                        <div class="offer-header">
+                            <div class="offer-brand">TESLA</div>
+                            <div class="offer-value">COMPLIMENTARY</div>
+                        </div>
+                        <div class="offer-description">3-day luxury vehicle experience. Model S Plaid available.</div>
+                        <div class="offer-type">QR CODE</div>
+                    </div>
+
+                    <div class="offer-card" onclick="openOffer('nobu')">
+                        <div class="offer-header">
+                            <div class="offer-brand">NOBU</div>
+                            <div class="offer-value">VIP ACCESS</div>
+                        </div>
+                        <div class="offer-description">Priority reservations and exclusive omakase experience.</div>
+                        <div class="offer-type">EMAIL SIGNUP</div>
+                    </div>
+
+                    <div class="offer-card" onclick="openOffer('spa')">
+                        <div class="offer-header">
+                            <div class="offer-brand">SPA EXPERIENCE</div>
+                            <div class="offer-value">$500 CREDIT</div>
+                        </div>
+                        <div class="offer-description">Premium wellness treatments and personalized therapies.</div>
+                        <div class="offer-type">QR CODE</div>
+                    </div>
+
+                    <div class="offer-card" onclick="openOffer('private-jet')">
+                        <div class="offer-header">
+                            <div class="offer-brand">NETJETS</div>
+                            <div class="offer-value">50% OFF</div>
+                        </div>
+                        <div class="offer-description">First private jet booking. Cessna Citation X+ available.</div>
+                        <div class="offer-type">EMAIL SIGNUP</div>
+                    </div>
+
+                    <div class="offer-card" onclick="openOffer('rolex')">
+                        <div class="offer-header">
+                            <div class="offer-brand">ROLEX</div>
+                            <div class="offer-value">EXCLUSIVE</div>
+                        </div>
+                        <div class="offer-description">Private viewing of limited edition timepieces.</div>
+                        <div class="offer-type">REDEEM IN-STORE</div>
+                    </div>
+
+                    <div class="offer-card" onclick="openOffer('michelin')">
+                        <div class="offer-header">
+                            <div class="offer-brand">MICHELIN DINING</div>
+                            <div class="offer-value">PRIORITY</div>
+                        </div>
+                        <div class="offer-description">Curated reservations at the city's finest restaurants.</div>
+                        <div class="offer-type">QR CODE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Screen -->
+        <div id="messages-screen" class="screen messages-screen">
+            <div class="dashboard-header">
+                <div class="logo">
+                    <img src="https://via.placeholder.com/100x50/c0c0c0/000000?text=VELOUR" alt="Velour Logo" class="logo-image" style="max-width: 100px;">
+                </div>
+                <h2 style="font-size: 1.5rem; font-weight: 300; letter-spacing: 1px; margin-top: 1rem;">MESSAGES</h2>
+            </div>
+
+            <div class="message-item unread" onclick="openMessage('new-offers')">
+                <div class="message-header">
+                    <div class="message-sender">VELOUR CONCIERGE</div>
+                    <div class="message-time">2 MIN AGO</div>
+                </div>
+                <div class="message-preview">New exclusive offers have been added to your collection. Limited time luxury experiences await...</div>
+            </div>
+
+            <div class="message-item unread" onclick="openMessage('ritz-carlton')">
+                <div class="message-header">
+                    <div class="message-sender">THE RITZ-CARLTON</div>
+                    <div class="message-time">15 MIN AGO</div>
+                </div>
+                <div class="message-preview">Welcome to The Ritz-Carlton. Your suite is ready and we've prepared something special...</div>
+            </div>
+
+            <div class="message-item" onclick="openMessage('spa-reminder')">
+                <div class="message-header">
+                    <div class="message-sender">SPA EXPERIENCE</div>
+                    <div class="message-time">2 HOURS AGO</div>
+                </div>
+                <div class="message-preview">Your $500 spa credit expires in 48 hours. Book your premium wellness treatment today...</div>
+            </div>
+
+            <div class="message-item" onclick="openMessage('tesla-update')">
+                <div class="message-header">
+                    <div class="message-sender">TESLA EXPERIENCE</div>
+                    <div class="message-time">YESTERDAY</div>
+                </div>
+                <div class="message-preview">Your complimentary Model S Plaid is ready for pickup. Delivery available to your location...</div>
+            </div>
+        </div>
+
+        <!-- Account Screen -->
+        <div id="account-screen" class="screen account-screen">
+            <div class="dashboard-header">
+                <div class="logo">
+                    <img src="https://via.placeholder.com/100x50/c0c0c0/000000?text=VELOUR" alt="Velour Logo" class="logo-image" style="max-width: 100px;">
+                </div>
+                <h2 style="font-size: 1.5rem; font-weight: 300; letter-spacing: 1px; margin-top: 1rem;">ACCOUNT</h2>
+            </div>
+
+            <div class="account-item" onclick="openAccountDetail('profile')">
+                <h3 style="margin-bottom: 0.5rem; color: #c0c0c0;">Profile Information</h3>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Manage your account details and preferences</p>
+            </div>
+
+            <div class="account-item" onclick="openAccountDetail('history')">
+                <h3 style="margin-bottom: 0.5rem; color: #c0c0c0;">Redemption History</h3>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">View past exclusive offers and transactions</p>
+            </div>
+
+            <div class="account-item" onclick="openAccountDetail('preferences')">
+                <h3 style="margin-bottom: 0.5rem; color: #c0c0c0;">Preferences</h3>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Customize your experience and notifications</p>
+            </div>
+
+            <div class="account-item" onclick="openAccountDetail('concierge')">
+                <h3 style="margin-bottom: 0.5rem; color: #c0c0c0;">Concierge Support</h3>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">24/7 dedicated assistance and support</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="showScreen('dashboard')">
+                <div class="nav-icon">◆</div>
+                <div class="nav-label">PERKS</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('messages')" style="position: relative;">
+                <div class="nav-icon">●</div>
+                <div class="nav-label">MESSAGES</div>
+                <div class="message-indicator">3</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('account')">
+                <div class="nav-icon">◯</div>
+                <div class="nav-label">ACCOUNT</div>
+            </div>
+        </div>
+
+        <!-- Offer Modal -->
+        <div id="offer-modal" class="offer-modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeOffer()">×</button>
+                <div id="modal-content-body">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Detail Modal -->
+        <div id="account-detail-modal" class="account-detail-modal">
+            <div class="detail-content">
+                <button class="modal-close" onclick="closeAccountDetail()">×</button>
+                <div id="account-detail-body">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Detail Modal -->
+        <div id="message-modal" class="offer-modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeMessage()">×</button>
+                <div id="message-content-body">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form validation and button activation
+        const emailInput = document.getElementById('email');
+        const reservationInput = document.getElementById('reservation');
+        const accessBtn = document.getElementById('access-btn');
+
+        function validateForm() {
+            const email = emailInput.value.trim();
+            const reservation = reservationInput.value.trim();
+            
+            if (email && reservation && email.includes('@')) {
+                accessBtn.classList.add('active');
+            } else {
+                accessBtn.classList.remove('active');
+            }
+        }
+
+        emailInput.addEventListener('input', validateForm);
+        reservationInput.addEventListener('input', validateForm);
+
+        // Registration form handling
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = emailInput.value;
+            const reservation = reservationInput.value;
+            
+            if (email && reservation && email.includes('@')) {
+                showScreen('dashboard');
+            }
+        });
+
+        // Screen navigation
+        function showScreen(screenName) {
+            // Hide all screens
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('dashboard-screen').style.display = 'none';
+            document.getElementById('account-screen').style.display = 'none';
+            document.getElementById('messages-screen').style.display = 'none';
+            
+            // Show selected screen
+            if (screenName === 'dashboard') {
+                document.getElementById('dashboard-screen').style.display = 'block';
+            } else if (screenName === 'account') {
+                document.getElementById('account-screen').style.display = 'block';
+            } else if (screenName === 'messages') {
+                document.getElementById('messages-screen').style.display = 'block';
+            }
+        }
+
+        // Offer details
+        const offers = {
+            'tiffany': {
+                brand: 'TIFFANY & CO.',
+                value: '20% OFF',
+                description: 'Exclusive discount on jewelry collections including engagement rings, necklaces, and luxury accessories. Valid at Tiffany & Co. flagship stores.',
+                type: 'in-store',
+                redemption: 'Present this offer in-store along with your hotel key card.'
+            },
+            'tesla': {
+                brand: 'TESLA',
+                value: 'COMPLIMENTARY',
+                description: '3-day luxury vehicle experience with Model S Plaid. Includes full autopilot features and premium connectivity.',
+                type: 'qr',
+                redemption: 'Scan QR code to schedule your vehicle delivery.',
+                qrData: 'https://tesla.com/experience/rc24-guest-access?code=VL2024RC'
+            },
+            'nobu': {
+                brand: 'NOBU',
+                value: 'VIP ACCESS',
+                description: 'Priority reservations and exclusive omakase experience with Chef Nobu\'s signature dishes.',
+                type: 'email',
+                redemption: 'Enter your email to receive priority booking access.'
+            },
+            'spa': {
+                brand: 'SPA EXPERIENCE',
+                value: '$500 CREDIT',
+                description: 'Premium wellness treatments including deep tissue massage, facial treatments, and personalized aromatherapy.',
+                type: 'qr',
+                redemption: 'Scan QR code to book your spa appointment.',
+                qrData: 'https://ritzcarlton.com/spa/book?credit=500&guest=velour'
+            },
+            'private-jet': {
+                brand: 'NETJETS',
+                value: '50% OFF',
+                description: 'First private jet booking with Cessna Citation X+. Includes premium catering and ground transportation.',
+                type: 'email',
+                redemption: 'Enter your email to connect with a private aviation specialist.'
+            },
+            'rolex': {
+                brand: 'ROLEX',
+                value: 'EXCLUSIVE',
+                description: 'Private viewing of limited edition timepieces including Submariner and Daytona collections.',
+                type: 'in-store',
+                redemption: 'Present this offer for your private appointment.'
+            },
+            'michelin': {
+                brand: 'MICHELIN DINING',
+                value: 'PRIORITY',
+                description: 'Curated reservations at the city\'s finest Michelin-starred restaurants with sommelier wine pairings.',
+                type: 'qr',
+                redemption: 'Scan QR code to view available restaurants and times.',
+                qrData: 'https://michelinguide.com/priority-booking?partner=velour&city=orlando'
+            }
+        };
+
+        function openOffer(offerId) {
+            const offer = offers[offerId];
+            let redeemContent = '';
+            
+            if (offer.type === 'qr') {
+                // Generate actual QR code using a service or replace with your QR code
+                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(offer.qrData)}`;
+                redeemContent = `
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px; border-radius: 10px;">
+                    </div>
+                    <div class="redeem-section">
+                        <p style="margin-bottom: 1rem; color: rgba(255, 255, 255, 0.8); text-align: center;">${offer.redemption}</p>
+                        <button class="redeem-btn" onclick="markAsRedeemed('${offerId}')">MARK AS REDEEMED</button>
+                    </div>
+                `;
+            } else if (offer.type === 'email') {
+                redeemContent = `
+                    <div class="form-group">
+                        <input type="email" id="redeem-email" placeholder="Enter your email address" style="margin-bottom: 1rem;">
+                    </div>
+                    <div class="redeem-section">
+                        <button class="redeem-btn" onclick="submitEmail('${offerId}')">SUBMIT EMAIL</button>
+                    </div>
+                `;
+            } else {
+                redeemContent = `
+                    <div class="redeem-section">
+                        <p style="margin-bottom: 1rem; color: rgba(255, 255, 255, 0.8); text-align: center;">${offer.redemption}</p>
+                        <button class="redeem-btn" onclick="markAsRedeemed('${offerId}')">MARK AS USED</button>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('modal-content-body').innerHTML = `
+                <div class="offer-header" style="margin-bottom: 2rem;">
+                    <div class="offer-brand" style="font-size: 1.3rem;">${offer.brand}</div>
+                    <div class="offer-value" style="font-size: 1rem;">${offer.value}</div>
+                </div>
+                <div class="offer-description" style="margin-bottom: 2rem; font-size: 1rem; line-height: 1.6;">${offer.description}</div>
+                ${redeemContent}
+            `;
+            
+            document.getElementById('offer-modal').style.display = 'block';
+        }
+
+        function closeOffer() {
+            document.getElementById('offer-modal').style.display = 'none';
+        }
+
+        function markAsRedeemed(offerId) {
+            userProgress.totalRedemptions++;
+            checkLevelUp(userProgress.totalRedemptions);
+            updateLevelDisplay();
+            
+            alert('Offer redeemed successfully! You will receive confirmation shortly.');
+            closeOffer();
+        }
+
+        function submitEmail(offerId) {
+            const email = document.getElementById('redeem-email').value;
+            if (email && email.includes('@')) {
+                userProgress.totalRedemptions++;
+                checkLevelUp(userProgress.totalRedemptions);
+                updateLevelDisplay();
+                
+                alert('Email submitted successfully! You will receive booking information shortly.');
+                closeOffer();
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        }
+
+        // Account details - moved after accountDetails definition
+
+        function openAccountDetail(detailType) {
+            const detail = accountDetails[detailType];
+            document.getElementById('account-detail-body').innerHTML = `
+                <h2 style="font-size: 1.3rem; font-weight: 300; letter-spacing: 1px; margin-bottom: 2rem; color: #c0c0c0;">${detail.title}</h2>
+                ${detail.content}
+                <div style="margin-top: 2rem;">
+                    <button class="back-btn" onclick="closeAccountDetail()">BACK TO ACCOUNT</button>
+                </div>
+            `;
+            document.getElementById('account-detail-modal').style.display = 'block';
+            
+            // Update level displays after opening
+            setTimeout(updateLevelDisplay, 100);
+        }
+
+        function closeAccountDetail() {
+            document.getElementById('account-detail-modal').style.display = 'none';
+        }
+
+        function togglePreference(toggleElement) {
+            toggleElement.classList.toggle('active');
+        }
+
+        function editField(fieldType) {
+            let currentValue, fieldId;
+            
+            switch(fieldType) {
+                case 'name':
+                    currentValue = document.getElementById('profile-name').textContent;
+                    fieldId = 'profile-name';
+                    break;
+                case 'email':
+                    currentValue = document.getElementById('profile-email').textContent;
+                    fieldId = 'profile-email';
+                    break;
+                case 'stay':
+                    currentValue = document.getElementById('profile-stay').textContent;
+                    fieldId = 'profile-stay';
+                    break;
+            }
+            
+            const fieldElement = document.getElementById(fieldId);
+            const originalHTML = fieldElement.innerHTML;
+            
+            fieldElement.innerHTML = `
+                <input type="text" class="field-input" value="${currentValue}" id="edit-${fieldType}" style="margin-right: 0;">
+            `;
+            
+            const input = document.getElementById(`edit-${fieldType}`);
+            input.focus();
+            input.select();
+            
+            function saveEdit() {
+                const newValue = input.value.trim();
+                if (newValue) {
+                    fieldElement.textContent = newValue;
+                    
+                    // Update the accountDetails for future renders
+                    if (fieldType === 'name') {
+                        accountDetails.profile.content = accountDetails.profile.content.replace(
+                            /Distinguished Guest/g, newValue
+                        );
+                    } else if (fieldType === 'email') {
+                        accountDetails.profile.content = accountDetails.profile.content.replace(
+                            /guest@email\.com/g, newValue
+                        );
+                    }
+                    
+                    alert('Profile updated successfully!');
+                } else {
+                    fieldElement.innerHTML = originalHTML;
+                }
+            }
+            
+            function cancelEdit() {
+                fieldElement.innerHTML = originalHTML;
+            }
+            
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    cancelEdit();
+                }
+            });
+        }
+
+        // Messages
+        const messages = {
+            'new-offers': {
+                sender: 'VELOUR CONCIERGE',
+                time: '2 MIN AGO',
+                subject: 'New Exclusive Offers Available',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Distinguished Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">We're delighted to inform you that new exclusive offers have been added to your Velour collection. These limited-time luxury experiences have been carefully curated to enhance your stay at The Ritz-Carlton.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">NEW ADDITIONS:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Exclusive Rolex private viewing</li>
+                            <li>Michelin-starred dining priority access</li>
+                            <li>Enhanced spa treatment credits</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">These offers are available for a limited time and subject to availability. We recommend reviewing them at your earliest convenience.</p>
+                    <p style="line-height: 1.6;">Sincerely,<br>The Velour Concierge Team</p>
+                `
+            },
+            'ritz-carlton': {
+                sender: 'THE RITZ-CARLTON',
+                time: '15 MIN AGO',
+                subject: 'Welcome to The Ritz-Carlton',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Valued Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Welcome to The Ritz-Carlton. Your suite is ready and we've prepared something special to mark the beginning of your luxury experience with us.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">YOUR SUITE AMENITIES:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Champagne welcome service</li>
+                            <li>Premium turndown service</li>
+                            <li>24-hour dedicated butler</li>
+                            <li>Access to Club Level amenities</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Your Velour exclusive perks are now active and ready for your enjoyment. Should you require any assistance, our concierge team is available 24/7.</p>
+                    <p style="line-height: 1.6;">With warmest regards,<br>The Ritz-Carlton Team</p>
+                `
+            },
+            'spa-reminder': {
+                sender: 'SPA EXPERIENCE',
+                time: '2 HOURS AGO',
+                subject: 'Spa Credit Expiration Reminder',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">This is a gentle reminder that your $500 spa credit will expire in 48 hours. We would love to help you experience our premium wellness treatments before your departure.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">RECOMMENDED TREATMENTS:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Signature Deep Tissue Massage (90 min)</li>
+                            <li>Diamond Radiance Facial (75 min)</li>
+                            <li>Aromatherapy Wellness Journey (120 min)</li>
+                            <li>Couples Retreat Package (3 hours)</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">To book your appointment, simply scan the QR code in your Velour app or call our spa concierge directly.</p>
+                    <p style="line-height: 1.6;">Wellness awaits,<br>The Spa Team</p>
+                `
+            },
+            'tesla-update': {
+                sender: 'TESLA EXPERIENCE',
+                time: 'YESTERDAY',
+                subject: 'Your Model S Plaid is Ready',
+                content: `
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Dear Velour Guest,</p>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Your complimentary Tesla Model S Plaid experience is ready for pickup. We're excited to provide you with three days of the ultimate luxury electric vehicle experience.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin: 1.5rem 0;">
+                        <h4 style="color: #c0c0c0; margin-bottom: 1rem;">VEHICLE FEATURES:</h4>
+                        <ul style="color: rgba(255,255,255,0.8); line-height: 1.8;">
+                            <li>Full Self-Driving Capability</li>
+                            <li>Premium Connectivity Package</li>
+                            <li>Tri-Motor All-Wheel Drive</li>
+                            <li>Premium Interior Package</li>
+                        </ul>
+                    </div>
+                    <p style="margin-bottom: 1.5rem; line-height: 1.6;">Delivery is available directly to The Ritz-Carlton valet, or you can visit our experience center. All insurance and charging costs are included.</p>
+                    <p style="line-height: 1.6;">Drive the future,<br>Tesla Experience Team</p>
+                `
+            }
+        };
+
+        function openMessage(messageId) {
+            const message = messages[messageId];
+            document.getElementById('message-content-body').innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: #c0c0c0; font-size: 1.2rem; margin-bottom: 0.5rem;">${message.subject}</h3>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 1rem;">${message.sender} • ${message.time}</div>
+                </div>
+                <div style="color: rgba(255,255,255,0.8);">
+                    ${message.content}
+                </div>
+                <div style="margin-top: 2rem;">
+                    <button class="back-btn" onclick="closeMessage()">BACK TO MESSAGES</button>
+                </div>
+            `;
+            document.getElementById('message-modal').style.display = 'block';
+        }
+
+        function closeMessage() {
+            document.getElementById('message-modal').style.display = 'none';
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('offer-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOffer();
+            }
+        });
+
+        document.getElementById('account-detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAccountDetail();
+            }
+        });
+
+        document.getElementById('message-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMessage();
+            }
+        });
+
+        // PWA installation prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        // Initialize level display on page load
+        window.addEventListener('load', function() {
+            updateLevelDisplay();
+        });
+    </script>
+</body>
+</html>
