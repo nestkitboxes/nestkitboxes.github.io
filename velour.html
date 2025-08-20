@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Velour Guest Perks</title>
+  <title>Guest Perks</title>
   <style>
     :root {
       --bg: #0b0b0e;
@@ -12,6 +12,9 @@
       --text: #e8e8ea;
       --brand: #bfa37a;
       --accent: #2a2a35;
+      --chip: #191922;
+      --chip-border: #2a2a36;
+      --border: #23232e;
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -22,91 +25,85 @@
       background: radial-gradient(1200px 800px at 70% -10%, #1b1b22 0%, #0b0b0e 60%);
     }
     a { color: inherit; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0px 15px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
     header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 0 24px; gap: 16px;
+      padding: 8px 0 0; gap: 16px;
+      margin-bottom: 28px;
     }
-    .logo { display: flex; align-items: center; gap: 12px; font-weight: 600; letter-spacing: .12em; }
-    .logo-badge { width: 36px; height: 36px; border-radius: 9px; background: linear-gradient(135deg,#1f1f29,#343445); display: grid; place-items: center; border: 1px solid #2e2e3a; }
-    nav button {
-      background: transparent; color: var(--text); border: 1px solid #2b2b36;
-      padding: 10px 14px; border-radius: 10px; cursor: pointer;
-    }
-    nav button:hover { background: #171722; }
-    .grid { display: grid; gap: 16px; }
+    .brandline { display:flex; align-items:center; gap: 12px; }
+    .logo { display:flex; align-items:left; gap:2px; height: 36px;margin-right: 1px;}
+    .logo-badge { width: 36px; height: 36px; border-radius: 9px; background: linear-gradient(135deg,#1f1f29,#343445); display: grid; place-items: center; border: 1px solid #2e2e3a; font-size: 14px; }
+    .tagline { color: var(--muted); font-weight: 500; letter-spacing: .02em; font-size: 1.25rem;}
+    nav { display:none; gap:8px; flex-wrap:wrap; }          /* hidden by default */
+    body.authed nav { display:flex; }                       /* show after access */
+    nav button { background: transparent; color: var(--text); border: 1px solid #2b2b36; padding:10px 14px; border-radius:10px; cursor:pointer; }
+    nav button:hover { background:#171722; }
+    .grid { display:grid; gap:16px; }
     .grid.cols-3 { grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); }
-    .card {
-      background: var(--card); border: 1px solid #23232e; border-radius: 16px; padding: 18px;
-      box-shadow: 0 6px 24px rgba(0,0,0,.25);
-      margin-top: 24px;
-    }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
     .muted { color: var(--muted); }
-    .pill { display:inline-flex; align-items:center; gap:8px; background:#191922; border:1px solid #2a2a36; padding:6px 10px; border-radius:999px; font-size:.9rem; }
-    .level-icon { font-size: 1.1rem; }
-    .progress { width:100%; background:#121219; border:1px solid #262633; border-radius:999px; height:12px; overflow:hidden; }
-    .progress > span { display:block; height:100%; width:0%; background:linear-gradient(90deg,#bfa37a,#9f835a); transition:width .4s ease; }
-    .btn {
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      background: linear-gradient(180deg,#232330,#181822); color:#fff;
-      border:1px solid #2c2c3a; padding:10px 14px; border-radius:12px; cursor:pointer;
-    }
-    .btn.primary { background: linear-gradient(180deg,#bfa37a,#9f835a); color:#ffffff; border-color:#bc9a67; font-weight:600; }
-    .btn:disabled { opacity:.5; cursor:not-allowed; }
-    input[type="text"], input[type="email"] {
-      width:100%; background:#14141a; border:1px solid #2a2a35; color:#fff; padding:12px 14px; border-radius:12px;
-    }
-    label { font-size:.9rem; color:var(--muted); display:block; margin-bottom:8px; }
-    .row { display:flex; gap:12px; }
-    .row > * { flex: 1; }
-    .hero { background: linear-gradient(180deg, rgba(191,163,122,.08), transparent 55%); border: 1px solid #2a2a34; border-radius: 18px; padding: 20px; }
-    .offer { cursor: pointer; }
-    .offer .brand { letter-spacing: .08em; font-weight: 600; color:#d8d8db; }
-    .offer .value { color:#bfa37a; }
+    .pill { display:inline-flex; align-items:center; gap:8px; background:var(--chip); border:1px solid var(--chip-border); padding:6px 10px; border-radius:999px; font-size:.9rem; }
+    .code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; letter-spacing:.06em; }
     .small { font-size:.9rem; }
-    /* screens */
-    section[hidden] { display: none !important; }
-    /* modal */
+    section[hidden] { display:none !important; }
+    .hero { background: linear-gradient(180deg, rgba(191,163,122,.08), transparent 55%); border: 1px solid #2a2a34; border-radius: 18px; padding: 20px; }
+    .controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    input[type="text"], input[type="email"], select {
+      background:#14141a; border:1px solid #2a2a35; color:#fff; padding:10px 12px; border-radius:10px;
+    }
+    .offer { cursor:pointer; position:relative; }
+    .offer .brand { letter-spacing:.08em; font-weight:600; color:#d8d8db; }
+    .offer .value { color:#bfa37a; font-weight:700; }
+    .offer .source-chip { position:absolute; top:12px; right:12px; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; background: linear-gradient(180deg,#232330,#181822); color:#fff; border:1px solid #2c2c3a; padding:10px 14px; border-radius:12px; cursor:pointer; }
+    .btn.primary { background: linear-gradient(180deg,#bfa37a,#9f835a); color:#0b0b0e; border-color:#bc9a67; font-weight:600; }
+    .btn.ghost { background: transparent; border-color:#2b2b36; }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    .divider { height:1px; background:#232332; margin:12px 0; }
     .modal { position: fixed; inset: 0; display:none; place-items:center; background: rgba(0,0,0,.55); padding: 24px; }
     .modal[aria-hidden="false"] { display:grid; }
-    .modal .sheet { max-width: 680px; width:100%; background:#121218; border:1px solid #2b2b37; border-radius:16px; padding: 18px; }
-    .modal header { padding:0 0 8px; }
+    .modal .sheet { max-width: 720px; width:100%; background:#121218; border:1px solid #2b2b37; border-radius:16px; padding: 18px; }
+    .modal header { padding:0 0 8px; display:flex;justify-content:space-between;align-items:center; }
     .close { background: transparent; border: 1px solid #2d2d3a; color:#fff; border-radius: 10px; padding: 6px 10px; cursor: pointer; }
-    .divider { height:1px; background:#232332; margin:12px 0; }
     .foot { display:flex; justify-content:flex-end; gap:10px; margin-top:12px; }
+    .empty { text-align:center; padding: 28px 8px; color: var(--muted); }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <div class="logo"><img src="images/velourlogo.png" alt="NestKit Logo" width="120" height="60"></div>
-      </div>
+      <div class="brandline">
+        <div class="logo">
+          <img src="images/velourlogo.png" alt="Velour Logo" class="site-logo">
+        </div>
       <nav>
-        <button type="button" onclick="App.showScreen('welcome')">Access</button>
         <button type="button" onclick="App.showScreen('dashboard')">Dashboard</button>
-        <button type="button" onclick="App.showScreen('account')">Account</button>
         <button type="button" onclick="App.showScreen('messages')">Messages</button>
+        <button type="button" onclick="App.showScreen('account')">Account</button>
+        <button type="button" onclick="App.openLevels()">Levels</button>
       </nav>
     </header>
 
-    <!-- WELCOME -->
+    <!-- WELCOME (Access Landing) -->
     <section id="welcome-screen" class="grid" style="grid-template-columns: 1fr;">
       <div class="hero card">
-        <h1 style="margin:0 0 8px;">Exclusive Guest Perks</h1>
-        <p class="muted">Register with your email and reservation code to unlock curated luxury offers during your stay.</p>
+        <h1 style="margin:0 0 8px;">Access Your Perks</h1>
+        <p class="muted">Enter your email and Access code from your card to unlock your hotel's offers. You can add codes from multiple hotels later.</p>
         <form id="registration-form" style="margin-top:16px;">
-          <div class="row">
+          <div class="grid" style="grid-template-columns: 1fr 1fr;">
             <div>
               <label for="email">Email</label>
               <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
             </div>
             <div>
-              <label for="reservation">Reservation Code</label>
-              <input type="text" id="reservation" placeholder="RC24-XXXXX" required>
+              <label for="accesscode">Access code</label>
+              <input type="text" id="accesscode" placeholder="e.g., MA-9JQ23ZK8" required>
             </div>
           </div>
-          <div style="margin-top:14px; display:flex; gap:10px;">
+          <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
             <button id="access-btn" class="btn primary" type="submit" disabled>Access Perks</button>
+            <button class="btn ghost" type="button" onclick="App.openLevels()">How Levels Work</button>
           </div>
         </form>
       </div>
@@ -114,43 +111,17 @@
 
     <!-- DASHBOARD -->
     <section id="dashboard-screen" hidden>
-      <div class="grid cols-3">
-        <div class="card">
-          <div class="pill"><span class="level-icon" aria-hidden="true">💎</span><span id="dash-level">PLATINUM</span></div>
-          <p class="muted small" style="margin:10px 0 8px;">Progress to next tier</p>
-          <div class="progress"><span id="progress-fill-2"></span></div>
-          <div id="progress-text-2" class="muted small" style="margin-top:6px;"></div>
-        </div>
-
-        <div class="card">
-          <h3 style="margin:0 0 8px;">Featured Offers</h3>
-          <div class="grid">
-            <div class="offer card" onclick="App.openOffer('tiffany')">
-              <div class="brand">TIFFANY &amp; CO.</div>
-              <div class="value">20% OFF</div>
-              <div class="muted small">Show at checkout</div>
-            </div>
-            <div class="offer card" onclick="App.openOffer('tesla')">
-              <div class="brand">TESLA</div>
-              <div class="value">COMPLIMENTARY</div>
-              <div class="muted small">Scan to book</div>
-            </div>
-            <div class="offer card" onclick="App.openOffer('nobu')">
-              <div class="brand">NOBU</div>
-              <div class="value">VIP ACCESS</div>
-              <div class="muted small">Email to reserve</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 style="margin:0 0 8px;">Shortcuts</h3>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn" type="button" onclick="App.showScreen('account')">Account</button>
-            <button class="btn" type="button" onclick="App.showScreen('messages')">Messages</button>
-          </div>
+      <div class="card">
+        <div class="controls">
+          <div class="pill">Offers Source</div>
+          <select id="hotel-filter" onchange="App.renderOffers()"></select>
+          <div class="pill">Add Hotel Code</div>
+          <input id="add-code" type="text" placeholder="e.g., HILTON-ABC12" style="max-width:260px;">
+          <button class="btn" type="button" onclick="App.addHotelFromCode()">Add</button>
         </div>
       </div>
+      <div class="grid cols-3" id="offers-grid" style="margin-top:16px;"></div>
+      <div id="no-offers" class="card empty" hidden>No offers yet. Add a hotel code to load perks from that property.</div>
     </section>
 
     <!-- ACCOUNT -->
@@ -158,34 +129,28 @@
       <div class="grid cols-3">
         <div class="card">
           <h3 style="margin:0 0 8px;">Profile</h3>
-          <div class="muted small">Name</div>
-          <div id="profile-name">Brent Parker</div>
-          <div class="divider"></div>
           <div class="muted small">Email</div>
           <div id="profile-email">guest@email.com</div>
           <div class="divider"></div>
-          <div class="muted small">Reservation</div>
-          <div>RC24-XXXXX</div>
-          <div class="divider"></div>
-          <div class="muted small">Tier</div>
-          <div><span id="profile-level-icon">💎</span> <span id="profile-level-name">PLATINUM</span></div>
+          <div class="muted small">Access Codes</div>
+          <div id="profile-codes" class="small code">—</div>
           <div class="divider"></div>
           <button class="btn" type="button" onclick="App.openAccountDetail('profile')">Edit</button>
         </div>
-
         <div class="card">
           <h3 style="margin:0 0 8px;">History</h3>
-          <div class="muted small">Total redemptions</div>
-          <div id="total-redemptions">8</div>
+          <div class="muted small">Total Redemptions</div>
+          <div id="total-redemptions">0</div>
           <div class="divider"></div>
           <button class="btn" type="button" onclick="App.openAccountDetail('history')">View</button>
         </div>
-
         <div class="card">
           <h3 style="margin:0 0 8px;">Preferences</h3>
           <div class="muted small">Notifications</div>
           <div style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn" onclick="App.openAccountDetail('preferences')">Configure</button>
+            <button class="btn">New Offers • On</button>
+            <button class="btn">Expirations • On</button>
+            <button class="btn">Concierge • On</button>
           </div>
         </div>
       </div>
@@ -197,7 +162,7 @@
         <div class="card">
           <h3 style="margin:0 0 8px;">Inbox</h3>
           <div class="grid">
-            <button class="btn" onclick="App.openMessage('new-offers')">Velour Concierge • New exclusive offers</button>
+            <button class="btn" onclick="App.openMessage('new-offers')">Concierge • New exclusive offers</button>
             <button class="btn" onclick="App.openMessage('ritz-carlton')">The Ritz-Carlton • Welcome</button>
             <button class="btn" onclick="App.openMessage('spa-reminder')">Spa Experience • Credit reminder</button>
             <button class="btn" onclick="App.openMessage('tesla-update')">Tesla • Your Model S is ready</button>
@@ -210,7 +175,7 @@
   <!-- Offer Modal -->
   <div id="offer-modal" class="modal" aria-hidden="true">
     <div class="sheet">
-      <header style="display:flex; justify-content:space-between; align-items:center;">
+      <header>
         <strong>Offer</strong>
         <button class="close" type="button" aria-label="Close" onclick="App.closeOffer()">Close</button>
       </header>
@@ -219,10 +184,31 @@
     </div>
   </div>
 
+  <!-- Levels Modal -->
+  <div id="levels-modal" class="modal" aria-hidden="true">
+    <div class="sheet">
+      <header>
+        <strong>Guest Levels</strong>
+        <button class="close" type="button" aria-label="Close" onclick="App.closeLevels()">Close</button>
+      </header>
+      <div class="divider"></div>
+      <div id="levels-body">
+        <p class="muted">Earn higher status by redeeming offers. Each redemption counts toward your progress.</p>
+        <div class="grid">
+          <div class="card"><div class="pill">🥇 GOLD</div><div class="small muted" style="margin-top:8px;">0–4 redemptions</div></div>
+          <div class="card"><div class="pill">💎 PLATINUM</div><div class="small muted" style="margin-top:8px;">5–9 redemptions</div></div>
+          <div class="card"><div class="pill">◆ BLACK</div><div class="small muted" style="margin-top:8px;">10–19 redemptions</div></div>
+          <div class="card"><div class="pill">💠 ELITE</div><div class="small muted" style="margin-top:8px;">20–34 redemptions</div></div>
+          <div class="card"><div class="pill">💎 DIAMOND</div><div class="small muted" style="margin-top:8px;">35+ redemptions</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Account Detail Modal -->
   <div id="account-detail-modal" class="modal" aria-hidden="true">
     <div class="sheet">
-      <header style="display:flex; justify-content:space-between; align-items:center;">
+      <header>
         <strong>Account</strong>
         <button class="close" type="button" aria-label="Close" onclick="App.closeAccountDetail()">Close</button>
       </header>
@@ -234,7 +220,7 @@
   <!-- Message Modal -->
   <div id="message-modal" class="modal" aria-hidden="true">
     <div class="sheet">
-      <header style="display:flex; justify-content:space-between; align-items:center;">
+      <header>
         <strong>Message</strong>
         <button class="close" type="button" aria-label="Close" onclick="App.closeMessage()">Close</button>
       </header>
@@ -244,195 +230,206 @@
   </div>
 
   <script>
-    // Single, consolidated app (no duplicate globals, safe DOM access)
     const App = (() => {
       "use strict";
-
       const state = {
-        totalRedemptions: 8,
-        currentLevel: "PLATINUM",
-        levelIcon: "💎"
+        authed: false,
+        totalRedemptions: 0,
+        scannedHotels: new Set(),
+        availableHotels: new Set(),
+        email: null,
+        codes: []  // access codes tied to this session
       };
 
-      const levels = {
-        "GOLD":      { min: 0,  max: 4,  icon: "🥇", next: "PLATINUM" },
-        "PLATINUM":  { min: 5,  max: 9,  icon: "💎", next: "BLACK" },
-        "BLACK":     { min: 10, max: 19, icon: "◆", next: "ELITE" },
-        "ELITE":     { min: 20, max: 34, icon: "💠", next: "DIAMOND" },
-        "DIAMOND":   { min: 35, max: 999,icon: "💎", next: null }
-      };
+      // Demo catalog
+      const catalog = [
+        { id:"tiffany", brand:"TIFFANY & CO.", value:"20% OFF", description:"Exclusive jewelry discount.", type:"in-store", redemption:"Present in-store.", hotel:"Marriott" },
+        { id:"tesla", brand:"TESLA", value:"COMPLIMENTARY", description:"3-day Model S experience.", type:"qr", redemption:"Scan to book.", hotel:"Marriott", qrData:"https://example.com/tesla" },
+        { id:"nobu", brand:"NOBU", value:"VIP ACCESS", description:"Priority omakase seating.", type:"email", redemption:"Enter email to reserve.", hotel:"Hilton" },
+        { id:"spa", brand:"RITZ SPA", value:"$200 CREDIT", description:"Luxury spa treatment credit.", type:"in-store", redemption:"Show at desk.", hotel:"Ritz-Carlton" },
+        { id:"rolex", brand:"ROLEX", value:"PRIVATE VIEWING", description:"Invitation-only boutique preview.", type:"email", redemption:"Enter email for invite.", hotel:"Hilton" }
+      ];
 
-      const offers = {
-        "tiffany": {
-          brand: "TIFFANY & CO.",
-          value: "20% OFF",
-          description: "Exclusive discount on jewelry collections including engagement rings, necklaces, and luxury accessories. Valid at Tiffany & Co. flagship stores.",
-          type: "in-store",
-          redemption: "Present this offer in-store along with your hotel key card."
-        },
-        "tesla": {
-          brand: "TESLA",
-          value: "COMPLIMENTARY",
-          description: "3-day luxury vehicle experience with Model S Plaid. Includes full autopilot features and premium connectivity.",
-          type: "qr",
-          redemption: "Scan QR code to schedule your vehicle delivery.",
-          qrData: "https://tesla.com/experience/rc24-guest-access?code=VL2024RC"
-        },
-        "nobu": {
-          brand: "NOBU",
-          value: "VIP ACCESS",
-          description: "Priority reservations and exclusive omakase experience with Chef Nobu's signature dishes.",
-          type: "email",
-          redemption: "Enter your email to receive priority booking access."
-        }
-      };
-
+      // Demo messages
       const messages = {
-        "new-offers": {
-          sender: "VELOUR CONCIERGE",
-          time: "2 MIN AGO",
-          subject: "New Exclusive Offers Available",
-          content: `
-            <p>Dear Distinguished Guest,</p>
-            <p>We're delighted to inform you that new exclusive offers have been added to your Velour collection.</p>
-            <ul><li>Exclusive Rolex private viewing</li><li>Michelin-starred dining priority access</li><li>Enhanced spa treatment credits</li></ul>
-            <p>Sincerely,<br/>The Velour Concierge Team</p>
-          `
-        },
-        "ritz-carlton": {
-          sender: "THE RITZ-CARLTON",
-          time: "15 MIN AGO",
-          subject: "Welcome to The Ritz-Carlton",
-          content: `
-            <p>Dear Valued Guest,</p>
-            <p>Welcome to The Ritz-Carlton. Your suite is ready and we've prepared something special to mark the beginning of your experience with us.</p>
-            <p>With warmest regards,<br/>The Ritz-Carlton Team</p>
-          `
-        },
-        "spa-reminder": {
-          sender: "SPA EXPERIENCE",
-          time: "2 HOURS AGO",
-          subject: "Spa Credit Expiration Reminder",
-          content: `
-            <p>Dear Guest,</p>
-            <p>This is a reminder that your $500 spa credit will expire in 48 hours.</p>
-            <p>Wellness awaits,<br/>The Spa Team</p>
-          `
-        },
-        "tesla-update": {
-          sender: "TESLA EXPERIENCE",
-          time: "YESTERDAY",
-          subject: "Your Model S Plaid is Ready",
-          content: `
-            <p>Dear Velour Guest,</p>
-            <p>Your complimentary Tesla Model S Plaid experience is ready for pickup.</p>
-            <p>Drive the future,<br/>Tesla Experience Team</p>
-          `
-        }
+        "new-offers": { sender:"CONCIERGE", time:"2 MIN AGO", subject:"New Exclusive Offers Available", content:`<p>New VIP offers are live.</p>` },
+        "ritz-carlton": { sender:"THE RITZ-CARLTON", time:"15 MIN AGO", subject:"Welcome to The Ritz-Carlton", content:`<p>Welcome to your stay.</p>` },
+        "spa-reminder": { sender:"SPA EXPERIENCE", time:"2 HOURS AGO", subject:"Spa Credit Reminder", content:`<p>Your spa credit expires in 48 hours.</p>` },
+        "tesla-update": { sender:"TESLA EXPERIENCE", time:"YESTERDAY", subject:"Your Model S is Ready", content:`<p>Your complimentary Tesla is ready.</p>` }
       };
 
-      const $ = (sel) => document.querySelector(sel);
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
 
       function showScreen(name) {
+        if (!state.authed && name !== "welcome") return; // block nav when not authed
         ["welcome","dashboard","account","messages"].forEach(s => {
-          const el = document.getElementById(`${s}-screen`);
+          const el = $("#"+s+"-screen");
           if (el) el.hidden = s !== name;
         });
-        // keep progress bars in sync across screens
-        updateLevelDisplay();
+        if (name === "dashboard") renderOffers();
       }
 
-      function updateLevelDisplay() {
-        const levelData = levels[state.currentLevel];
-        const next = levelData.next ? levels[levelData.next] : null;
-
-        // main
-        const fill = $("#progress-fill");
-        const text = $("#progress-text");
-        const dashFill = $("#progress-fill-2");
-        const dashText = $("#progress-text-2");
-        const levelBadges = document.querySelectorAll(".level-icon");
-        const currentLevelEl = $("#current-level");
-        const dashLevel = $("#dash-level");
-
-        levelBadges.forEach(el => el.textContent = levelData.icon);
-        if (currentLevelEl) currentLevelEl.textContent = state.currentLevel;
-        if (dashLevel) dashLevel.textContent = state.currentLevel;
-
-        const pct = next ? Math.min(
-          ((state.totalRedemptions - levelData.min) / (next.min - levelData.min)) * 100,
-          100
-        ) : 100;
-
-        if (fill) fill.style.width = `${pct}%`;
-        if (dashFill) dashFill.style.width = `${pct}%`;
-
-        const progressText = next
-          ? `${state.totalRedemptions} of ${next.min} offers redeemed to reach ${levelData.next}`
-          : "Maximum level achieved!";
-
-        if (text) text.textContent = progressText;
-        if (dashText) dashText.textContent = progressText;
-
-        // account mirrors
-        const profileIcon = $("#profile-level-icon");
-        const profileName = $("#profile-level-name");
-        const totalEl = $("#total-redemptions");
-        if (profileIcon) profileIcon.textContent = levelData.icon;
-        if (profileName) profileName.textContent = state.currentLevel;
-        if (totalEl) totalEl.textContent = state.totalRedemptions;
-      }
-
-      function checkLevelUp() {
-        const found = Object.entries(levels).find(([name, data]) => (
-          state.totalRedemptions >= data.min && state.totalRedemptions <= data.max
-        ));
-        if (found && state.currentLevel !== found[0]) {
-          state.currentLevel = found[0];
-          state.levelIcon = found[1].icon;
-          updateLevelDisplay();
-          alert(`🎉 Congratulations! You've reached ${state.currentLevel} level!`);
-        }
-      }
-
-      function bindAccessForm() {
+      function initAccess() {
         const form = $("#registration-form");
         const email = $("#email");
-        const res = $("#reservation");
+        const code = $("#accesscode");
         const btn = $("#access-btn");
-
         const validate = () => {
-          const ok = email && res && email.value.includes("@") && res.value.trim().length > 0;
+          const ok = email && code && email.value.includes("@") && code.value.trim().length > 0;
           if (btn) btn.disabled = !ok;
         };
+        email?.addEventListener("input", validate);
+        code?.addEventListener("input", validate);
+        form?.addEventListener("submit", (e) => {
+          e.preventDefault();
+          validate();
+          if (!btn.disabled) {
+            // authenticate UX
+            state.authed = true;
+            document.body.classList.add("authed");
 
-        if (email) email.addEventListener("input", validate);
-        if (res) res.addEventListener("input", validate);
-        if (form) {
-          form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            validate();
-            if (btn && !btn.disabled) {
-              showScreen("dashboard");
-            }
-          });
-        }
+            state.email = email.value.trim();
+            const access = code.value.trim();
+            state.codes.push(access);
+
+            const mappedHotel = mapCodeToHotel(access);
+            if (mappedHotel) state.scannedHotels.add(mappedHotel);
+
+            populateHotelFilter();
+            updateProfilePanel();
+            showScreen("dashboard");
+          }
+        });
         validate();
+        showScreen("welcome");
       }
 
-      function openOffer(id) {
-        const offer = offers[id];
+      function updateProfilePanel() {
+        const pEmail = $("#profile-email"); if (pEmail) pEmail.textContent = state.email || "—";
+        const pCodes = $("#profile-codes"); if (pCodes) pCodes.textContent = state.codes.length ? state.codes.join(", ") : "—";
+      }
+
+      function mapCodeToHotel(code) {
+        const h = (code || "").toUpperCase();
+        if (h.includes("MARRIOTT") || h.startsWith("MA-")) return "Marriott";
+        if (h.includes("HILTON")   || h.startsWith("HL-")) return "Hilton";
+        if (h.includes("RITZ")     || h.startsWith("RZ-")) return "Ritz-Carlton";
+        return null;
+      }
+
+      function populateHotelFilter() {
+        // build available hotel set from catalog first
+        state.availableHotels = new Set(catalog.map(o => o.hotel));
+
+        const select = $("#hotel-filter");
+        if (!select) return;
+        select.innerHTML = "";
+
+        // All hotels option
+        const optAll = document.createElement("option");
+        optAll.value = "ALL";
+        optAll.textContent = "All Hotels";
+        select.appendChild(optAll);
+
+        // User scanned first, then others
+        const userHotels = Array.from(state.scannedHotels);
+        const others = Array.from(state.availableHotels).filter(h => !state.scannedHotels.has(h));
+
+        [...userHotels, ...others].forEach(h => {
+          const opt = document.createElement("option");
+          opt.value = h; opt.textContent = h;
+          select.appendChild(opt);
+        });
+
+        // Default selection: All Hotels
+        select.value = "ALL";
+      }
+
+      function addHotelFromCode() {
+        const box = $("#add-code");
+        const val = box?.value.trim() || "";
+        if (!val) return;
+        const mapped = mapCodeToHotel(val);
+        if (mapped) {
+          state.scannedHotels.add(mapped);
+          state.codes.push(val);
+          populateHotelFilter();
+          renderOffers();
+          updateProfilePanel();
+          alert(`Added offers from ${mapped}.`);
+          box.value = "";
+        } else {
+          alert("Code not recognized. Include MA-/HILTON-, HL-/HILTON-, or RZ-/RITZ- in the code.");
+        }
+      }
+
+      function ensureOfferCodes() {
+        // Attach a stable pseudo-unique code for each offer instance (per session)
+        if (!ensureOfferCodes._map) ensureOfferCodes._map = new Map();
+        const map = ensureOfferCodes._map;
+        const getCodeFor = (offer) => {
+          if (map.has(offer.id)) return map.get(offer.id);
+          const prefix = (offer.hotel === "Marriott" ? "MH" : offer.hotel === "Hilton" ? "HL" : "RZ");
+          const brand = offer.brand.replace(/[^A-Z]/gi, "").slice(0,3).toUpperCase();
+          const rand = Math.random().toString(36).replace(/[^a-z0-9]/gi,'').slice(2,8).toUpperCase();
+          const code = `${prefix}-${brand}-${rand}`;
+          map.set(offer.id, code);
+          return code;
+        };
+        return getCodeFor;
+      }
+
+      function renderOffers() {
+        const grid = $("#offers-grid");
+        const empty = $("#no-offers");
+        const filter = $("#hotel-filter")?.value || "ALL";
+        if (!grid) return;
+        grid.innerHTML = "";
+
+        let data;
+        if (filter === "ALL") {
+          // union of all unlocked hotels; if none scanned, show full catalog
+          data = state.scannedHotels.size ?
+            catalog.filter(o => state.scannedHotels.has(o.hotel)) :
+            catalog.slice();
+        } else {
+          data = catalog.filter(o => o.hotel === filter);
+        }
+
+        if (!data.length) { empty.hidden = false; return; }
+        empty.hidden = true;
+
+        const codeFor = ensureOfferCodes(); // get code generator/lookup
+        data.forEach(offer => {
+          const displayCode = codeFor(offer);
+          const card = document.createElement("div");
+          card.className = "offer card";
+          card.innerHTML = `
+            <div class="brand">${offer.brand}</div>
+            <div class="value">${offer.value}</div>
+            <div class="muted small" style="margin-top:6px;">${offer.description}</div>
+            <div class="source-chip pill">${offer.hotel}</div>
+            <div class="muted small" style="margin-top:8px;">Show this code at checkout: <span class="code">${displayCode}</span></div>
+          `;
+          card.addEventListener("click", () => openOffer(offer.id, displayCode));
+          grid.appendChild(card);
+        });
+      }
+
+      function openOffer(id, displayCode) {
+        const offer = catalog.find(o => o.id === id);
         if (!offer) return;
         let redeemHTML = "";
 
         if (offer.type === "qr") {
-          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(offer.qrData)}`;
+          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(offer.qrData || offer.brand)}`;
           redeemHTML = `
             <div style="text-align:center;margin:16px 0;">
               <img src="${qrUrl}" alt="QR Code" width="200" height="200" style="border-radius:10px;" />
             </div>
             <div class="foot">
-              <button class="btn primary" type="button" onclick="App.markAsRedeemed('${id}')">Mark as Redeemed</button>
+              <button class="btn primary" type="button" onclick="App.markAsRedeemed()">Mark as Redeemed</button>
             </div>`;
         } else if (offer.type === "email") {
           redeemHTML = `
@@ -441,27 +438,30 @@
               <input id="redeem-email" type="email" placeholder="you@example.com"/>
             </div>
             <div class="foot">
-              <button class="btn primary" type="button" onclick="App.submitEmail('${id}')">Submit Email</button>
+              <button class="btn primary" type="button" onclick="App.submitEmail()">Submit Email</button>
             </div>`;
         } else {
           redeemHTML = `
             <div class="foot">
-              <button class="btn primary" type="button" onclick="App.markAsRedeemed('${id}')">Mark as Used</button>
+              <button class="btn primary" type="button" onclick="App.markAsRedeemed()">Mark as Used</button>
             </div>`;
         }
 
         const body = document.getElementById("modal-content-body");
         if (body) {
           body.innerHTML = `
-            <div style="display:flex; align-items:baseline; justify-content:space-between;">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
               <div>
                 <div class="muted small">Brand</div>
                 <div style="font-weight:600; letter-spacing:.08em;">${offer.brand}</div>
               </div>
+              <div class="pill">${offer.hotel}</div>
               <div class="value" style="font-weight:700;">${offer.value}</div>
             </div>
             <div class="divider"></div>
             <div class="muted" style="line-height:1.6;">${offer.description}</div>
+            <div class="divider"></div>
+            <div class="muted small">Show this code at checkout: <span class="code">${displayCode}</span></div>
             <div class="divider"></div>
             <div class="muted small">${offer.redemption}</div>
             ${redeemHTML}`;
@@ -469,102 +469,80 @@
         setModalVisible("#offer-modal", true);
       }
 
-      function markAsRedeemed(/*id*/) {
+      function markAsRedeemed() {
         state.totalRedemptions += 1;
-        checkLevelUp();
-        updateLevelDisplay();
+        const totalEl = $("#total-redemptions");
+        if (totalEl) totalEl.textContent = String(state.totalRedemptions);
         alert("Offer redeemed successfully!");
         setModalVisible("#offer-modal", false);
       }
 
-      function submitEmail(/*id*/) {
+      function submitEmail() {
         const input = document.getElementById("redeem-email");
         if (input && input.value.includes("@")) {
           state.totalRedemptions += 1;
-          checkLevelUp();
-          updateLevelDisplay();
+          const totalEl = $("#total-redemptions");
+          if (totalEl) totalEl.textContent = String(state.totalRedemptions);
           alert("Email submitted successfully!");
           setModalVisible("#offer-modal", false);
-        } else {
-          alert("Please enter a valid email address.");
-        }
+        } else { alert("Please enter a valid email address."); }
       }
 
-      function openAccountDetail(type) {
-        const levelData = levels[state.currentLevel];
-        let content = "";
-        if (type === "profile") {
-          content = `
-            <div class="muted small">Name</div>
-            <div id="profile-name-editable">Distinguished Guest</div>
-            <div class="divider"></div>
-            <div class="muted small">Email</div>
-            <div id="profile-email-editable">guest@email.com</div>
-            <div class="divider"></div>
-            <div class="muted small">Tier</div>
-            <div><span>${levelData.icon}</span> ${state.currentLevel}</div>`;
-        } else if (type === "history") {
-          content = `
-            <div class="muted small">Current Level</div>
-            <div><span>${levelData.icon}</span> ${state.currentLevel}</div>
-            <div class="divider"></div>
-            <div class="muted small">Total Redemptions</div>
-            <div>${state.totalRedemptions}</div>`;
-        } else if (type === "preferences") {
-          content = `
-            <div class="muted small">Notifications</div>
-            <div style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
-              <button class="btn">New Offers • On</button>
-              <button class="btn">Expirations • On</button>
-              <button class="btn">Concierge • On</button>
-            </div>`;
-        } else {
-          content = `<div class="muted">Content not found.</div>`;
-        }
-        const body = document.getElementById("account-detail-body");
-        if (body) body.innerHTML = content;
-        setModalVisible("#account-detail-modal", true);
-      }
-
+      // Messages
       function openMessage(id) {
         const msg = messages[id];
         const body = document.getElementById("message-content-body");
         if (msg && body) {
-          body.innerHTML = `
-            <div style="margin-bottom:8px;font-weight:600">${msg.subject}</div>
-            <div class="muted small" style="margin-bottom:12px;">${msg.sender} • ${msg.time}</div>
-            <div>${msg.content}</div>`;
+          body.innerHTML = `<div style="margin-bottom:8px;font-weight:600">${msg.subject}</div>
+                            <div class="muted small" style="margin-bottom:12px;">${msg.sender} • ${msg.time}</div>
+                            <div>${msg.content}</div>`;
           setModalVisible("#message-modal", true);
         }
       }
+      function closeMessage() { setModalVisible("#message-modal", false); }
 
+      // Levels modal
+      function openLevels() { setModalVisible("#levels-modal", true); }
+      function closeLevels() { setModalVisible("#levels-modal", false); }
+
+      // Account details
+      function openAccountDetail(type) {
+        let content = "";
+        if (type === "profile") {
+          content = `<div class="muted small">Email</div><div>${state.email || "—"}</div>
+                     <div class="divider"></div><div class="muted small">Access Codes</div><div class="code">${state.codes.join(", ") || "—"}</div>`;
+        } else if (type === "history") {
+          content = `<div class="muted small">Total Redemptions</div><div>${state.totalRedemptions}</div>`;
+        } else { content = `<div class="muted">Content not found.</div>`; }
+        const body = document.getElementById("account-detail-body"); if (body) body.innerHTML = content;
+        setModalVisible("#account-detail-modal", true);
+      }
+      function closeAccountDetail() { setModalVisible("#account-detail-modal", false); }
+
+      // Modal helper
       function setModalVisible(selector, visible) {
         const el = document.querySelector(selector);
         if (!el) return;
         el.setAttribute("aria-hidden", visible ? "false" : "true");
       }
 
-      function closeOffer() { setModalVisible("#offer-modal", false); }
-      function closeAccountDetail() { setModalVisible("#account-detail-modal", false); }
-      function closeMessage() { setModalVisible("#message-modal", false); }
-
-      // bootstrap
       document.addEventListener("DOMContentLoaded", () => {
-        bindAccessForm();
-        updateLevelDisplay();
-        showScreen("welcome");
+        // clicking overlay closes modals
+        $$(".modal").forEach(m => m.addEventListener("click", (e) => { if (e.target === m) m.setAttribute("aria-hidden","true"); }));
 
-        // allow clicking on overlay to close
-        document.querySelectorAll(".modal").forEach(m => {
-          m.addEventListener("click", (e) => { if (e.target === m) m.setAttribute("aria-hidden","true"); });
-        });
+        initAccess();           // start on Access
+        populateHotelFilter();  // prep filter options
+        renderOffers();         // render (will respect auth and filters)
       });
 
       return {
         showScreen,
-        openOffer, closeOffer, markAsRedeemed, submitEmail,
+        openOffer, closeOffer: () => setModalVisible("#offer-modal", false),
+        markAsRedeemed, submitEmail,
+        openLevels, closeLevels,
         openAccountDetail, closeAccountDetail,
-        openMessage, closeMessage
+        openMessage, closeMessage,
+        addHotelFromCode, renderOffers
       };
     })();
   </script>
