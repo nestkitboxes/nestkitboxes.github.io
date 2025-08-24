@@ -102,6 +102,15 @@
     
     .grid { display: grid; gap: 16px; }
     .grid.cols-3 { grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); }
+    .grid.cols-3 { 
+  grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); 
+}
+
+@media (max-width: 768px) {
+  .grid.cols-3 { 
+    grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); 
+  }
+}
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
     .muted { color: var(--muted); }
     .pill { display: inline-flex; align-items: center; gap: 8px; background: var(--chip); border: 1px solid var(--chip-border); padding: 6px 10px; border-radius: 999px; font-size: .9rem; }
@@ -113,10 +122,26 @@
     input[type="text"], input[type="email"], select {
       background: #14141a; border: 1px solid #2a2a35; color: #fff; padding: 10px 12px; border-radius: 10px;
     }
+    /* Enhanced Offer Card Styles */
     .offer { cursor: pointer; position: relative; }
     .offer .brand { letter-spacing: .08em; font-weight: 600; color: #d8d8db; }
     .offer .value { color: #bfa37a; font-weight: 700; }
     .offer .source-chip { position: absolute; top: 12px; right: 12px; }
+    .offer-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #2a2a35, #1a1a22);
+}
+.modal-offer-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 12px 0;
+}
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(180deg,#232330,#181822); color: #fff; border: 1px solid #2c2c3a; padding: 10px 14px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; }
     .btn.primary { background: linear-gradient(180deg,#bfa37a,#9f835a); color: #0b0b0e; border-color: #bc9a67; font-weight: 600; }
     .btn.ghost { background: transparent; border-color: #2b2b36; }
@@ -414,11 +439,11 @@
 
       // Demo catalog
       const catalog = [
-        { id:"tiffany", brand:"TIFFANY & CO.", value:"20% OFF", description:"Exclusive jewelry discount.", type:"in-store", redemption:"Present in-store.", hotel:"Marriott" },
-        { id:"tesla", brand:"TESLA", value:"COMPLIMENTARY", description:"3-day Model S experience.", type:"qr", redemption:"Scan to book.", hotel:"Marriott", qrData:"https://example.com/tesla" },
-        { id:"nobu", brand:"NOBU", value:"VIP ACCESS", description:"Priority omakase seating.", type:"email", redemption:"Enter email to reserve.", hotel:"Hilton" },
-        { id:"spa", brand:"RITZ SPA", value:"$200 CREDIT", description:"Luxury spa treatment credit.", type:"in-store", redemption:"Show at desk.", hotel:"Ritz-Carlton" },
-        { id:"rolex", brand:"ROLEX", value:"PRIVATE VIEWING", description:"Invitation-only boutique preview.", type:"email", redemption:"Enter email for invite.", hotel:"Hilton" }
+        { id:"tiffany", brand:"TIFFANY & CO.", value:"20% OFF", description:"Exclusive jewelry discount.", type:"in-store", redemption:"Present in-store.", hotel:"Marriott", image: "images/tiffany.png"},
+        { id:"tesla", brand:"TESLA", value:"COMPLIMENTARY", description:"3-day Model S experience.", type:"qr", redemption:"Scan to book.", hotel:"Marriott", qrData:"https://example.com/tesla", image: "images/tesla.png"},
+        { id:"nobu", brand:"NOBU", value:"VIP ACCESS", description:"Priority omakase seating.", type:"email", redemption:"Enter email to reserve.", hotel:"Hilton", image: "images/nobu.png"},
+        { id:"spa", brand:"RITZ SPA", value:"$200 CREDIT", description:"Luxury spa treatment credit.", type:"in-store", redemption:"Show at desk.", hotel:"Ritz-Carlton", image: "images/ritz.png"},
+        { id:"rolex", brand:"ROLEX", value:"PRIVATE VIEWING", description:"Invitation-only boutique preview.", type:"email", redemption:"Enter email for invite.", hotel:"Hilton", image: "images/rolex.png"}
       ];
 
       // Demo messages
@@ -684,41 +709,44 @@
       }
 
       function renderOffers() {
-        const grid = $("#offers-grid");
-        const empty = $("#no-offers");
-        const filter = $("#hotel-filter")?.value || "ALL";
-        if (!grid) return;
-        grid.innerHTML = "";
+  const grid = $("#offers-grid");
+  const empty = $("#no-offers");
+  const filter = $("#hotel-filter")?.value || "ALL";
+  if (!grid) return;
+  grid.innerHTML = "";
 
-        let data;
-        if (filter === "ALL") {
-          // union of all unlocked hotels; if none scanned, show full catalog
-          data = state.scannedHotels.size ?
-            catalog.filter(o => state.scannedHotels.has(o.hotel)) :
-            catalog.slice();
-        } else {
-          data = catalog.filter(o => o.hotel === filter);
-        }
+  let data;
+  if (filter === "ALL") {
+    // union of all unlocked hotels; if none scanned, show full catalog
+    data = state.scannedHotels.size ?
+      catalog.filter(o => state.scannedHotels.has(o.hotel)) :
+      catalog.slice();
+  } else {
+    data = catalog.filter(o => o.hotel === filter);
+  }
 
-        if (!data.length) { empty.hidden = false; return; }
-        empty.hidden = true;
+  if (!data.length) { empty.hidden = false; return; }
+  empty.hidden = true;
 
-        const codeFor = ensureOfferCodes(); // get code generator/lookup
-        data.forEach(offer => {
-          const displayCode = codeFor(offer);
-          const card = document.createElement("div");
-          card.className = "offer card";
-          card.innerHTML = `
-            <div class="brand">${offer.brand}</div>
-            <div class="value">${offer.value}</div>
-            <div class="muted small" style="margin-top:6px;">${offer.description}</div>
-            <div class="source-chip pill">${offer.hotel}</div>
-            <div class="muted small" style="margin-top:8px;">Offer code: <span class="code">${displayCode}</span></div>
-          `;
-          card.addEventListener("click", () => openOffer(offer.id, displayCode));
-          grid.appendChild(card);
-        });
-      }
+  const codeFor = ensureOfferCodes(); // get code generator/lookup
+  data.forEach(offer => {
+    const displayCode = codeFor(offer);
+    const card = document.createElement("div");
+    card.className = "offer card";
+    card.innerHTML = `
+      <img src="${offer.image}" alt="${offer.brand}" class="offer-image" loading="lazy">
+      <div class="offer-content">
+        <div class="brand">${offer.brand}</div>
+        <div class="value">${offer.value}</div>
+        <div class="description">${offer.description}</div>
+        <div class="offer-code">Code: <span class="code">${displayCode}</span></div>
+      </div>
+      <div class="source-chip pill">${offer.hotel}</div>
+    `;
+    card.addEventListener("click", () => openOffer(offer.id, displayCode));
+    grid.appendChild(card);
+  });
+}
 
       function openOffer(id, displayCode) {
         const offer = catalog.find(o => o.id === id);
@@ -752,22 +780,24 @@
 
         const body = document.getElementById("modal-content-body");
         if (body) {
-          body.innerHTML = `
-            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-              <div>
-                <div class="muted small">Brand</div>
-                <div style="font-weight:600; letter-spacing:.08em;">${offer.brand}</div>
-              </div>
-              <div class="pill">${offer.hotel}</div>
-              <div class="value" style="font-weight:700;">${offer.value}</div>
-            </div>
-            <div class="divider"></div>
-            <div class="muted" style="line-height:1.6;">${offer.description}</div>
-            <div class="divider"></div>
-            <div class="muted small">Offer code: <span class="code">${displayCode}</span></div>
-            <div class="divider"></div>
-            <div class="muted small">${offer.redemption}</div>
-            ${redeemHTML}`;
+          // Add this line in the modal content where the offer details are shown:
+body.innerHTML = `
+  <img src="${offer.image}" alt="${offer.brand}" class="modal-offer-image">
+  <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+    <div>
+      <div class="muted small">Brand</div>
+      <div style="font-weight:600; letter-spacing:.08em;">${offer.brand}</div>
+    </div>
+    <div class="pill">${offer.hotel}</div>
+    <div class="value" style="font-weight:700;">${offer.value}</div>
+  </div>
+  <div class="divider"></div>
+  <div class="muted" style="line-height:1.6;">${offer.description}</div>
+  <div class="divider"></div>
+  <div class="muted small">Offer code: <span class="code">${displayCode}</span></div>
+  <div class="divider"></div>
+  <div class="muted small">${offer.redemption}</div>
+  ${redeemHTML}`;
         }
         setModalVisible("#offer-modal", true);
       }
