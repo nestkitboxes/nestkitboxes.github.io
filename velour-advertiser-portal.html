@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velour Advertiser Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        :root {
+            --primary: #bfa37a;
+            --primary-dark: #9f835a;
+            --bg: #0b0b0e;
+            --card: #14141a;
+            --border: #23232e;
+            --text: #e8e8ea;
+            --text-muted: rgba(255,255,255,0.65);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        /* Light theme variables */
+        [data-theme="light"] {
+            --bg: #ffffff;
+            --card: #f8f9fa;
+            --border: #e9ecef;
+            --text: #212529;
+            --text-muted: rgba(33, 37, 41, 0.65);
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(191, 163, 122, 0.1);
+            border: 1px solid rgba(191, 163, 122, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text);
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(191, 163, 122, 0.2);
+            border-color: rgba(191, 163, 122, 0.5);
+        }
+
+        .theme-text {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-bell {
+            position: relative;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(191, 163, 122, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .notification-bell:hover {
+            background: rgba(191, 163, 122, 0.2);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--bg);
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 0;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(191, 163, 122, 0.1);
+        }
+
+        /* Main Content */
+        .main {
+            padding: 2rem 0;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+            flex: 1;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(191, 163, 122, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-file {
+            padding: 2rem;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .form-file:hover {
+            border-color: var(--primary);
+            background: rgba(191, 163, 122, 0.05);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .table td {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Status Badges */
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-inactive {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        /* Metrics */
+        .metric-card {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .metric-change.positive {
+            color: var(--success);
+        }
+
+        .metric-change.negative {
+            color: var(--danger);
+        }
+
+        /* QR Code Display */
+        .qr-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            border-radius: 8px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .header-content {
+                gap: 1rem;
+            }
+
+            .nav-tabs {
+                padding: 0 15px;
+            }
+
+            .main {
+                padding: 1rem 0;
+            }
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                font-size: 0.8rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .chart-small {
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    ◆ VELOUR PARTNER
+                </div>
+                <div class="user-info">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark theme">
+                        <span id="theme-icon">🌙</span>
+                        <span class="theme-text">THEME</span>
+                    </button>
+                    <div class="notification-bell" onclick="showNotifications()">
+                        🔔
+                        <div class="notification-badge"></div>
+                    </div>
+                    <div class="user-avatar">TH</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
+                <button class="nav-tab" onclick="showSection('listings')">Manage Listings</button>
+                <button class="nav-tab" onclick="showSection('performance')">Performance</button>
+                <button class="nav-tab" onclick="showSection('hotels')">Hotel Network</button>
+                <button class="nav-tab" onclick="showSection('upgrades')">Upgrade Services</button>
+                <button class="nav-tab" onclick="showSection('integration')">API Integration</button>
+                <button class="nav-tab" onclick="showSection('notifications')">Notifications</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h1 class="section-title">Dashboard Overview</h1>
+                    <p class="section-subtitle">Welcome back! Here's how your campaigns are performing across the Velour network.</p>
+                </div>
+
+                <div class="grid grid-4">
+                    <div class="card metric-card">
+                        <div class="metric-value">2,847</div>
+                        <div class="metric-label">Total Impressions</div>
+                        <div class="metric-change positive">↗ +12.5% vs last month</div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value">89%</div>
+                        <div class="metric-label">Redemption Rate</div>
+                        <div class="metric-change positive">↗ +5.2% vs last month</div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value">15</div>
+                        <div class="metric-label">Active Hotels</div>
+                        <div class="metric-change positive">↗ +3 new this month</div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value">$4.2K</div>
+                        <div class="metric-label">Revenue Generated</div>
+                        <div class="metric-change positive">↗ +18.7% vs last month</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Activity</h3>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Hotel</th>
+                                        <th>Action</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Ritz-Carlton Orlando</td>
+                                        <td>Offer Redeemed</td>
+                                        <td>2 min ago</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Marriott Downtown</td>
+                                        <td>New Guest Scan</td>
+                                        <td>15 min ago</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hilton Garden Inn</td>
+                                        <td>Offer Viewed</td>
+                                        <td>1 hour ago</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Performance Trends</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Listings Section -->
+            <section id="listings" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Manage Listings</h1>
+                    <p class="section-subtitle">Create and manage your promotional offers across hotel properties.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Your Active Listings</h3>
+                        <button class="btn btn-primary" onclick="openCreateListingModal()">+ Create New Listing</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Offer Title</th>
+                                    <th>Hotels</th>
+                                    <th>Status</th>
+                                    <th>Impressions</th>
+                                    <th>Redemptions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>20% Off Fine Jewelry</td>
+                                    <td>5 Hotels</td>
+                                    <td><span class="status status-active">Active</span></td>
+                                    <td>1,245</td>
+                                    <td>89</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-secondary" onclick="editListing('1')">Edit</button>
+                                        <button class="btn btn-sm btn-danger">Pause</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>VIP Spa Package</td>
+                                    <td>3 Hotels</td>
+                                    <td><span class="status status-active">Active</span></td>
+                                    <td>892</td>
+                                    <td>67</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-secondary" onclick="editListing('2')">Edit</button>
+                                        <button class="btn btn-sm btn-danger">Pause</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Luxury Car Rental</td>
+                                    <td>8 Hotels</td>
+                                    <td><span class="status status-pending">Pending Review</span></td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-secondary" onclick="editListing('3')">Edit</button>
+                                        <button class="btn btn-sm btn-warning">Review</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Section -->
+            <section id="performance" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Performance Analytics</h1>
+                    <p class="section-subtitle">Deep dive into your campaign performance and ROI metrics.</p>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">7.2%</div>
+                        <div class="metric-label">Average CTR</div>
+                        <div class="metric-change positive">↗ +0.8% vs industry avg</div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value">$2.15</div>
+                        <div class="metric-label">Cost Per Acquisition</div>
+                        <div class="metric-change negative">↘ -$0.32 vs last month</div>
+                    </div>
+                    <div class="card metric-card">
+                        <div class="metric-value">4.7x</div>
+                        <div class="metric-label">Return on Ad Spend</div>
+                        <div class="metric-change positive">↗ +0.9x vs last month</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Monthly Performance</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="monthlyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Conversion Funnel</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="funnelChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Hotel Performance Comparison</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="hotelChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hotels Section -->
+            <section id="hotels" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Hotel Network</h1>
+                    <p class="section-subtitle">Explore new hotel partnerships and manage your current placements.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recently Added Hotels</h3>
+                        <button class="btn btn-primary">Request Partnership</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Hotel</th>
+                                    <th>Location</th>
+                                    <th>Guest Profile</th>
+                                    <th>Avg. Stay Value</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>The Breakers Palm Beach</td>
+                                    <td>Palm Beach, FL</td>
+                                    <td>Luxury Leisure</td>
+                                    <td>$2,800</td>
+                                    <td><span class="status status-pending">Available</span></td>
+                                    <td><button class="btn btn-sm btn-primary">Request Access</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Mandarin Oriental NYC</td>
+                                    <td>New York, NY</td>
+                                    <td>Business Executive</td>
+                                    <td>$3,200</td>
+                                    <td><span class="status status-pending">Available</span></td>
+                                    <td><button class="btn btn-sm btn-primary">Request Access</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Beverly Hills Hotel</td>
+                                    <td>Beverly Hills, CA</td>
+                                    <td>Celebrity/VIP</td>
+                                    <td>$4,100</td>
+                                    <td><span class="status status-active">Active</span></td>
+                                    <td><button class="btn btn-sm btn-secondary">Manage</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upgrades Section -->
+            <section id="upgrades" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Upgrade Services</h1>
+                    <p class="section-subtitle">Enhance your campaigns with premium features and services.</p>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Premium Analytics</h3>
+                        </div>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                            Get advanced insights with heat maps, guest journey tracking, and predictive analytics.
+                        </p>
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">$299/month</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">per brand</div>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;">Upgrade Now</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Current Plan: Professional</h3>
+                    </div>
+                    <div class="grid grid-2">
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: var(--text);">Included Features</h4>
+                            <ul style="list-style: none; padding: 0; color: var(--text-muted);">
+                                <li style="margin-bottom: 0.5rem;">✓ Basic analytics dashboard</li>
+                                <li style="margin-bottom: 0.5rem;">✓ Standard QR code generation</li>
+                                <li style="margin-bottom: 0.5rem;">✓ Up to 10 hotel properties</li>
+                                <li style="margin-bottom: 0.5rem;">✓ Email support</li>
+                                <li style="margin-bottom: 0.5rem;">✓ Monthly performance reports</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: var(--text);">Usage This Month</h4>
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="color: var(--text-muted);">Hotels</span>
+                                    <span style="color: var(--text);">8/10</span>
+                                </div>
+                                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                                    <div style="width: 80%; height: 100%; background: var(--primary); border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="color: var(--text-muted);">Impressions</span>
+                                    <span style="color: var(--text);">2.8K/5K</span>
+                                </div>
+                                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                                    <div style="width: 56%; height: 100%; background: var(--primary); border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Integration Section -->
+            <section id="integration" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">API Integration</h1>
+                    <p class="section-subtitle">Connect your systems directly to the Velour platform for seamless automation.</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">API Documentation</h3>
+                        </div>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                            Complete REST API documentation with endpoints for managing listings, retrieving analytics, and automating campaigns.
+                        </p>
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <code style="color: var(--primary);">
+                                GET /api/v1/listings<br>
+                                POST /api/v1/listings<br>
+                                GET /api/v1/analytics/{listing_id}<br>
+                                PUT /api/v1/listings/{id}
+                            </code>
+                        </div>
+                        <button class="btn btn-primary">View Full Documentation</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">API Keys</h3>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Production API Key</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="password" class="form-input" value="vk_live_12345abcdef67890" readonly style="flex: 1;">
+                                <button class="btn btn-secondary" onclick="toggleApiKey(this)">👁️</button>
+                                <button class="btn btn-secondary" onclick="copyApiKey()">📋</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sandbox API Key</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="password" class="form-input" value="vk_test_abcdef1234567890" readonly style="flex: 1;">
+                                <button class="btn btn-secondary" onclick="toggleApiKey(this)">👁️</button>
+                                <button class="btn btn-secondary" onclick="copyApiKey()">📋</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger btn-sm">Regenerate Keys</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Webhook Configuration</h3>
+                    </div>
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Webhook URL</label>
+                            <input type="url" class="form-input" placeholder="https://yourapi.com/webhooks/velour">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Events</label>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+                                    <input type="checkbox" checked> listing.redeemed
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+                                    <input type="checkbox" checked> listing.viewed
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);">
+                                    <input type="checkbox"> hotel.added
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary">Save Webhook Settings</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Integration Status</h3>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                    <th>Last Sync</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>POS System Integration</td>
+                                    <td><span class="status status-active">Connected</span></td>
+                                    <td>2 minutes ago</td>
+                                    <td><button class="btn btn-sm btn-secondary">Configure</button></td>
+                                </tr>
+                                <tr>
+                                    <td>CRM Sync</td>
+                                    <td><span class="status status-pending">Pending</span></td>
+                                    <td>Never</td>
+                                    <td><button class="btn btn-sm btn-primary">Set Up</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Analytics Platform</td>
+                                    <td><span class="status status-active">Connected</span></td>
+                                    <td>1 hour ago</td>
+                                    <td><button class="btn btn-sm btn-secondary">Configure</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications Section -->
+            <section id="notifications" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Notification Center</h1>
+                    <p class="section-subtitle">Manage your notification preferences and view recent alerts.</p>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Notifications</h3>
+                        </div>
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="this.style.background='rgba(255,255,255,0.02)'">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 600; color: var(--text);">New Hotel Partnership</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">2 hours ago</span>
+                                </div>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">The Breakers Palm Beach is now available for partnerships. Premium guest demographic with high spending potential.</p>
+                            </div>
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="this.style.background='rgba(255,255,255,0.02)'">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 600; color: var(--text);">Performance Alert</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">1 day ago</span>
+                                </div>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">Your "VIP Spa Package" campaign exceeded expected redemption rates by 25% this week.</p>
+                            </div>
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="this.style.background='rgba(255,255,255,0.02)'">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 600; color: var(--text);">API Integration</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">2 days ago</span>
+                                </div>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">Your webhook endpoint returned a 500 error. Please check your integration settings.</p>
+                            </div>
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="this.style.background='rgba(255,255,255,0.02)'">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 600; color: var(--text);">Monthly Report</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">1 week ago</span>
+                                </div>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">Your monthly performance report is ready. Download it from the Performance section.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Notification Preferences</h3>
+                        </div>
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text); margin-bottom: 1rem;">
+                                <input type="checkbox" checked>
+                                <span>New hotel partnerships available</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text); margin-bottom: 1rem;">
+                                <input type="checkbox" checked>
+                                <span>Performance alerts and milestones</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text); margin-bottom: 1rem;">
+                                <input type="checkbox" checked>
+                                <span>API and integration issues</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text); margin-bottom: 1rem;">
+                                <input type="checkbox">
+                                <span>Weekly digest emails</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text); margin-bottom: 1rem;">
+                                <input type="checkbox" checked>
+                                <span>Billing and account updates</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Notification Frequency</label>
+                            <select class="form-input">
+                                <option>Real-time</option>
+                                <option>Hourly digest</option>
+                                <option>Daily digest</option>
+                                <option>Weekly digest</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary">Save Preferences</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Push Notification Settings</h3>
+                    </div>
+                    <div class="grid grid-2">
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: var(--text);">Browser Notifications</h4>
+                            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Receive instant notifications directly in your browser for urgent alerts and real-time campaign updates.
+                            </p>
+                            <button class="btn btn-primary" onclick="requestNotificationPermission()">Enable Browser Notifications</button>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 1rem; color: var(--text);">Mobile App</h4>
+                            <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                                Download the Velour Partner app for iOS and Android to receive push notifications on your mobile device.
+                            </p>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary btn-sm">iOS App</button>
+                                <button class="btn btn-secondary btn-sm">Android App</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Create Listing Modal -->
+    <div id="createListingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Listing</h2>
+                <button class="modal-close" onclick="closeModal('createListingModal')">&times;</button>
+            </div>
+            
+            <form id="createListingForm">
+                <div class="form-group">
+                    <label class="form-label">Offer Title</label>
+                    <input type="text" class="form-input" placeholder="e.g., 20% Off Premium Jewelry" required>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Offer Type</label>
+                        <select class="form-input" required>
+                            <option value="">Select offer type</option>
+                            <option value="percentage">Percentage Discount</option>
+                            <option value="fixed">Fixed Amount Off</option>
+                            <option value="bogo">Buy One Get One</option>
+                            <option value="vip">VIP Experience</option>
+                            <option value="complimentary">Complimentary Service</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Value</label>
+                        <input type="text" class="form-input" placeholder="e.g., 20% or $100" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input form-textarea" placeholder="Detailed description of your offer..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload Offer Image</label>
+                    <div class="form-file" onclick="document.getElementById('offerImage').click()">
+                        <input type="file" id="offerImage" accept="image/*" style="display: none;">
+                        <div>📷 Click to upload image</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                            Recommended: 800x600px, JPG or PNG
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">QR Code Action</label>
+                    <select class="form-input" onchange="toggleQROptions(this.value)">
+                        <option value="none">No QR Code</option>
+                        <option value="website">Link to Website</option>
+                        <option value="phone">Call Phone Number</option>
+                        <option value="email">Send Email</option>
+                        <option value="custom">Custom Action</option>
+                    </select>
+                </div>
+
+                <div id="qrOptions" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">QR Code Destination</label>
+                        <input type="text" class="form-input" placeholder="Enter URL, phone number, or email">
+                    </div>
+                    <div class="qr-display" id="qrPreview" style="display: none;">
+                        <img id="generatedQR" class="qr-code" alt="Generated QR Code">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Target Hotels</label>
+                    <div style="max-height: 150px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="checkbox" value="ritz-orlando"> Ritz-Carlton Orlando
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="checkbox" value="four-seasons-miami"> Four Seasons Miami
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="checkbox" value="st-regis-atlanta"> St. Regis Atlanta
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="checkbox" value="mandarin-nyc"> Mandarin Oriental NYC
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="checkbox" value="beverly-hills"> Beverly Hills Hotel
+                        </label>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('createListingModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Listing</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <div id="notificationMessage"></div>
+    </div>
+
+    <script>
+        // Chart configurations
+        function getChartTheme() {
+            const isDark = !document.body.getAttribute('data-theme') || document.body.getAttribute('data-theme') === 'dark';
+            return {
+                textColor: isDark ? '#e8e8ea' : '#212529',
+                gridColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
+            };
+        }
+
+        function createPerformanceChart() {
+            const ctx = document.getElementById('performanceChart');
+            if (!ctx || typeof Chart === 'undefined') {
+                console.log('Chart.js not loaded or canvas not found');
+                return;
+            }
+            
+            const theme = getChartTheme();
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Impressions',
+                        data: [1200, 1900, 1500, 2100, 2400, 2200, 2847],
+                        borderColor: '#bfa37a',
+                        backgroundColor: 'rgba(191, 163, 122, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Redemptions',
+                        data: [120, 180, 140, 210, 240, 220, 280],
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: theme.textColor }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: theme.textColor },
+                            grid: { color: theme.gridColor }
+                        },
+                        y: {
+                            ticks: { color: theme.textColor },
+                            grid: { color: theme.gridColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createMonthlyChart() {
+            const ctx = document.getElementById('monthlyChart');
+            if (!ctx || typeof Chart === 'undefined') {
+                console.log('Chart.js not loaded or canvas not found');
+                return;
+            }
+            
+            const theme = getChartTheme();
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: [850, 1200, 980, 1400],
+                        backgroundColor: 'rgba(191, 163, 122, 0.8)',
+                        borderColor: '#bfa37a',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: theme.textColor }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: theme.textColor },
+                            grid: { color: theme.gridColor }
+                        },
+                        y: {
+                            ticks: { color: theme.textColor },
+                            grid: { color: theme.gridColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createFunnelChart() {
+            const ctx = document.getElementById('funnelChart');
+            if (!ctx || typeof Chart === 'undefined') {
+                console.log('Chart.js not loaded or canvas not found');
+                return;
+            }
+            
+            const theme = getChartTheme();
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Views', 'Clicks', 'Redemptions'],
+                    datasets: [{
+                        data: [2847, 1423, 284],
+                        backgroundColor: [
+                            'rgba(191, 163, 122, 0.8)',
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(59, 130, 246, 0.8)'
+                        ],
+                        borderColor: [
+                            '#bfa37a',
+                            '#22c55e',
+                            '#3b82f6'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: theme.textColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createHotelChart() {
+            const ctx = document.getElementById('hotelChart');
+            if (!ctx || typeof Chart === 'undefined') {
+                console.log('Chart.js not loaded or canvas not found');
+                return;
+            }
+            
+            const theme = getChartTheme();
+            
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Impressions', 'CTR', 'Redemptions', 'Revenue', 'Guest Satisfaction'],
+                    datasets: [{
+                        label: 'Ritz-Carlton Orlando',
+                        data: [85, 92, 88, 95, 90],
+                        borderColor: '#bfa37a',
+                        backgroundColor: 'rgba(191, 163, 122, 0.2)',
+                        pointBackgroundColor: '#bfa37a',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#bfa37a'
+                    }, {
+                        label: 'Four Seasons Miami',
+                        data: [78, 85, 92, 88, 94],
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                        pointBackgroundColor: '#22c55e',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#22c55e'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: theme.textColor }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { color: theme.gridColor },
+                            grid: { color: theme.gridColor },
+                            pointLabels: { color: theme.textColor },
+                            ticks: { 
+                                color: theme.textColor,
+                                backdropColor: 'transparent'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeCharts() {
+            // Check if Chart.js is loaded
+            if (typeof Chart === 'undefined') {
+                console.log('Chart.js is not loaded. Charts will not be displayed.');
+                return;
+            }
+
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                createPerformanceChart();
+                createMonthlyChart();
+                createFunnelChart();
+                createHotelChart();
+            }, 100);
+        }
+
+        function destroyCharts() {
+            // Destroy existing charts before recreating for theme changes
+            if (typeof Chart !== 'undefined' && Chart.instances) {
+                Object.values(Chart.instances).forEach(instance => {
+                    instance.destroy();
+                });
+            }
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'light') {
+                body.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+            
+            // Recreate charts with new theme
+            destroyCharts();
+            initializeCharts();
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'light') {
+                document.body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+            } else {
+                themeIcon.textContent = '🌙';
+            }
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Modal functions
+        function openCreateListingModal() {
+            document.getElementById('createListingModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function editListing(id) {
+            showNotification('Opening listing editor for ID: ' + id, 'success');
+        }
+
+        // QR Code functionality
+        function toggleQROptions(value) {
+            const qrOptions = document.getElementById('qrOptions');
+            if (value !== 'none') {
+                qrOptions.style.display = 'block';
+            } else {
+                qrOptions.style.display = 'none';
+            }
+        }
+
+        // API Key functions
+        function toggleApiKey(button) {
+            const input = button.previousElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+
+        function copyApiKey() {
+            showNotification('API key copied to clipboard', 'success');
+        }
+
+        // Notification functions
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const messageDiv = document.getElementById('notificationMessage');
+            
+            messageDiv.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function showNotifications() {
+            showSection('notifications');
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('[onclick="showSection(\'notifications\')"]').classList.add('active');
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        showNotification('Browser notifications enabled successfully!', 'success');
+                        new Notification('Velour Partner Portal', {
+                            body: 'You will now receive real-time notifications for important updates.',
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💎</text></svg>'
+                        });
+                    } else {
+                        showNotification('Notification permission denied', 'error');
+                    }
+                });
+            } else {
+                showNotification('Browser notifications not supported', 'error');
+            }
+        }
+
+        // Form submission
+        document.getElementById('createListingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showNotification('Listing created successfully! It will be reviewed within 24 hours.', 'success');
+            closeModal('createListingModal');
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // File upload preview
+        document.getElementById('offerImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileArea = document.querySelector('.form-file');
+                    fileArea.innerHTML = `
+                        <img src="${e.target.result}" style="max-width: 200px; max-height: 150px; border-radius: 8px;">
+                        <div style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">${file.name}</div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Generate QR code preview (mock)
+        document.querySelector('#qrOptions input').addEventListener('input', function(e) {
+            const value = e.target.value;
+            if (value) {
+                const qrPreview = document.getElementById('qrPreview');
+                const qrImg = document.getElementById('generatedQR');
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(value)}`;
+                qrPreview.style.display = 'flex';
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme
+            loadTheme();
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('Welcome back! You have 3 new notifications.', 'info');
+            }, 1000);
+        });
+    </script>
+</body>
